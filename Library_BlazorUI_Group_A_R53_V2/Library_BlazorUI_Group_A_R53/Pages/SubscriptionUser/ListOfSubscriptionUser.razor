@@ -1,0 +1,94 @@
+﻿
+@page "/suscriptionUserList"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+
+<h3>Subscription User List</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>SubscriptonUserId</th>
+            <th>ApplicationUserId</th>
+            <th>SubscriptionPlanId</th>
+            <th>TransactionId:</th>
+            <th>Accepted</th>
+            <th>Action</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in SubscriptionUserList)
+        {
+            <tr>
+                <td>@item.SubscriptonUserId</td>
+                <td>@item.ApplicationUserId</td>
+                <td>@item.SubscriptionPlanId</td>
+                <td>@item.TransactionId</td>
+                <td>@item.Accepted</td>
+               
+                <td>
+
+                    <div>
+
+                        @if (item.Accepted == null)
+                        {
+                            <button @onclick="() => SubscriptionUserAccept(item.SubscriptonUserId)" class="btn btn-success">Accept</button>
+                            <button @onclick="() => SubscriptionUserReject(item.SubscriptonUserId)" class="btn btn-danger">Reject</button>
+                        }
+                       @* @if (item.Status == "Cancelled")
+                        {
+                            <button @onclick="() => ApproveRequest(item.BorrowedBookId)" class="btn btn-success">Approve</button>
+                        }*@
+
+                       
+
+                    </div>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+   
+
+    public IEnumerable<SubscriptionUser> SubscriptionUserList { get; set; } = new List<SubscriptionUser>();
+
+    private int showCommentFormId = -1;
+    private decimal miscFine;
+    private int confirmBorrowedBookId = -1;
+
+    [Inject]
+    public ISubscriptionUserService SubscriptionUserService { get; set; }
+
+    //[Inject]
+    //public IBookService BookService { get; set; }
+    //[Inject]
+    //public IBookCopyService BookCopyService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SubscriptionUserList = await SubscriptionUserService.GetSubscriptionUserAll();
+    }
+
+    private async Task SubscriptionUserAccept(int subsUserId)
+    {
+
+        await SubscriptionUserService.AcceptSubscriptionUserRequest(subsUserId);
+        await OnInitializedAsync();
+    }
+
+    private async Task SubscriptionUserReject(int subsUserId)
+    {
+
+        await SubscriptionUserService.RejectSubscriptionRequest(subsUserId);
+        await OnInitializedAsync();
+    }
+
+   
+
+}

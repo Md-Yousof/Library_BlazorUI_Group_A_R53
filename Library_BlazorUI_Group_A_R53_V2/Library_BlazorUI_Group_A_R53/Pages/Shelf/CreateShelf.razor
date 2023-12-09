@@ -1,0 +1,109 @@
+﻿
+@page "/create-shelf"
+@using Library_BlazorUI_Group_A_R53.Data.Models
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Services.ShelfService;
+
+<div class="row">
+    <div class="col-lg-9">
+        <h2>Create Shelf</h2>
+    </div>
+    <div class="col-lg-3 text-right">
+        <a href="/bookfloor" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+    </div>
+</div>
+<div class="form-control" style="background-color:ivory">
+    <div class="row">
+        <div class="col-5">
+            <div class="form-group">
+                <label for="ShelfName">Shelf Name:</label>
+                <input type="text" class="form-control" id="ShelfName" @bind="newShelf.ShelfName" />
+            </div>
+
+            <div class="form-group">
+                <label for="BookFloorId">Book Floor:</label>
+                <select class="form-control" @bind="newShelf.BookFloorId">
+                    <option value="">-- Select Book Floor --</option>
+                    @foreach (var floor in bookFloors)
+                    {
+                        <option value="@floor.BookFloorId">@floor.BookFloorName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ShelfName">Is Active:</label>
+                <input type="checkbox" class="form-check" id="ShelfName" @bind="newShelf.IsActive" />
+            </div>
+
+            <div class="form-group">
+
+
+                @for (var i = 0; i < newShelf.BookRacks.Count; i++)
+                {
+                    var index = i;
+                    var bookRack = newShelf.BookRacks[i];
+
+                    <h5> @(i + 1). Rack Name:</h5>
+
+                    <div class="form-group">
+                        @*<label>BookRack Name:</label>*@
+                        <input type="text" class="form-control" @bind="bookRack.BookRackName" />
+                    </div>
+
+                    <button type="button" class="btn btn-danger"
+                    @onclick="@(() => newShelf.BookRacks.RemoveAt(index))">
+                        Remove
+                    </button>
+
+                }
+                <div class="form-group">
+                    <button type="button" class="btn btn-secondary"
+                    @onclick="@(() => newShelf.BookRacks.Add(new BookRack()))">
+                        +Add BookRack 
+                    </button>
+                </div>
+
+            </div>
+
+            <button class="btn btn-warning" @onclick="Clear">Clear</button>
+            <button class="btn btn-primary" @onclick="CreateShelves">Create</button>
+
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private Shelf newShelf = new Shelf();
+    private List<BookFloor> bookFloors = new List<BookFloor>();
+    // private List<BookRack> bookRacks = new List<BookRack> { new BookRack() };  // Initialize with one BookRack
+
+    [Inject]
+    private IShelfService ShelfService { get; set; }
+    [Inject]
+    private IBookFloorService BookFloorService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    private async Task CreateShelves()
+    {
+        await ShelfService.CreateShelf(newShelf);
+        NavigationManager.NavigateTo("/shelf");
+
+    }
+
+    protected override async Task OnInitializedAsync() //This method for Dropdown List for BookFloor
+    {
+        // Fetch book floors from the service,
+        bookFloors = (await BookFloorService.GetBookFloors()).ToList();
+
+        await base.OnInitializedAsync();
+    }
+
+    private void Clear()
+    {
+        newShelf = new Shelf();
+    }
+}

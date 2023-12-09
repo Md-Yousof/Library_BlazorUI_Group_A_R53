@@ -1,0 +1,110 @@
+﻿@page "/create-bookCopy"
+
+
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+@using Library_BlazorUI_Group_A_R53.Services.ShelfService;
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-9">
+            <h2>BookCopy Create</h2>
+        </div>
+
+        <div class="col-lg-3 text-right">
+            <a href="/bookfloor" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+
+    <form @onsubmit="CreateBookCopyAsync" style="background-color:ivory">
+        <div class="col-5">
+            <div class="form-group">
+                <label for="bookId">Book Title:</label>
+                <select class="form-control" @bind="newBookCopy.BookId">
+                    <option value="">--Select Book Title</option>
+                    @foreach (var bookName in Books)
+                    {
+                        <option value="@bookName.BookId">@bookName.Title</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Book Condition:</label>
+                <select class="form-control" @bind="newBookCopy.condition">
+                    <option value="">--Select Book Condition--</option>
+                    @foreach (var value in Enum.GetValues(typeof(BookCondition)))
+                    {
+                        <option value="@value">@value</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-check">
+                <label for="IsAvailable">IsAvailable:</label>
+                <input type="checkbox" class="form-check-input" id="IsAvailable" @bind="newBookCopy.IsAvailable">
+            </div>
+
+            <div class="form-group">
+                <label for="callNumber">CallNumber:</label>
+                <input type="text" class="form-control" id="callNumber" @bind="newBookCopy.CallNumber">
+            </div>
+
+            <div class="form-group">
+                <label for="shelfId">Shel Name:</label>
+                <select class="form-control" @bind="newBookCopy.ShelfId">
+                    <option value="">--Select Shelf Name--</option>
+                    @foreach (var shelfName in Shelves)
+                    {
+                        <option value="@shelfName.ShelfId">@shelfName.ShelfName</option>
+                    }
+
+                </select>
+                <div class="form-group">
+                    <label for="ddc">DDC:</label>
+                    <input type="text" class="form-control" id="ddc" @bind="newBookCopy.DDC">
+                </div>
+            </div>
+
+            <div class="form-check">
+                <label for="isActive">Active:</label>
+                <input type="checkbox" class="form-check-input" id="isActive" @bind="newBookCopy.IsActive">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+
+@code {
+
+
+    private BookCopy newBookCopy = new BookCopy();
+    private List<Shelf> Shelves = new List<Shelf>();
+    private List<Book> Books = new List<Book>();
+
+    [Inject]
+    private IBookCopyService BookCopyService { get; set; }
+    [Inject]
+    private IShelfService ShelfService { get; set; }
+    [Inject]
+    private IBookService BookService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateBookCopyAsync()
+    {
+        await BookCopyService.CreateBookCopy(newBookCopy);
+        NavigationManager.NavigateTo("/bookCopy"); // Redirect to the bookFloors listing page
+    }
+
+    protected override async Task OnInitializedAsync() //this methor for List of Shelf in Dropdown of BookCopy form
+    {
+        // Fetch book floors from the service
+        Shelves = (await ShelfService.GetShelves()).ToList();
+        Books = (await BookService.GetBooks()).ToList();
+        await base.OnInitializedAsync();
+
+    }
+}
+

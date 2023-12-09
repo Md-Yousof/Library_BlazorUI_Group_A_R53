@@ -1,0 +1,77 @@
+﻿@page "/edit-Author/{id}"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+            <h2>Author Create</h2>
+        </div>
+
+        <div class="col-lg-3 text-right">
+            <a href="/author" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+
+    <form>
+        <div class="form-group">
+            <label for="FirstName">FirstName:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="editedAuthor.FirstName">
+        </div>
+        <div class="form-group">
+            <label for="LastName">LastName:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="editedAuthor.LastName">
+        </div>
+        <div class="form-group">
+            <label for="BirthDate">DateOfBirth:</label>
+            <input type="date" class="form-control" id="bookFloorName" @bind="editedAuthor.BirthDate">
+        </div>
+
+        <div class="form-group">
+            <label for="Biography">Biography:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="editedAuthor.Biography">
+        </div>
+        <div class="form-group">
+            <label for="Email">Email:</label>
+            <input type="email" class="form-control" id="bookFloorName" @bind="editedAuthor.Email">
+        </div>
+        <div class="form-group">
+            <label for="CellPhone">CellPhone:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="editedAuthor.Phone">
+        </div>
+        <div class="form-check">
+            <label for="isActive">Active:</label>
+            <input type="checkbox" class="form-check-input" id="isActive" @bind="editedAuthor.IsActive">
+        </div>
+
+        <button type="button" class="btn btn-primary" @onclick="UpdateAuthor">Update</button>
+    </form>
+</div>
+
+@code {
+    private Author editedAuthor = new Author();
+
+    [Parameter]
+    public string id { get; set; }
+
+    [Inject]
+    private IAuthorService AuthorService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int AuthorId))
+        {
+            editedAuthor = await AuthorService.GetAuthorById(AuthorId);
+        }
+    }
+
+    private async Task UpdateAuthor()
+    {
+         await AuthorService.UpdateAuthor(editedAuthor);
+         NavigationManager.NavigateTo("/Author");
+            
+    }
+}

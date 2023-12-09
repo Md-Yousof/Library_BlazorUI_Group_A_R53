@@ -1,0 +1,167 @@
+﻿@page "/author"
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+<h3>Author</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by AuthorName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateAuthor" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</div>
+
+<p>Serch Name: @filterText</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Si_No</th>
+           @* <th @onclick="SortByAuthorId">Id</th>*@
+            <th @onclick="SortByFirstName">FirstName</th>
+            <th @onclick="SortByFirstName">LastName</th>
+            <th @onclick="SortByFirstName">BirthDate</th>
+            <th @onclick="SortByFirstName">Biography</th>
+            <th @onclick="SortByFirstName">Email</th>
+            <th @onclick="SortByFirstName">CellPhone</th>
+            <th @onclick="SortByIsActive">Active</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item, index) in GetFilteredAndSortedAuthors().Select((value,index)=>(value,index)))
+        {
+            <tr>
+                <td>@(index+1)</td>
+               @* <td>@item.AuthorId</td>*@
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.BirthDate</td>
+                <td>@item.Biography</td>
+                <td>@item.Email</td>
+                <td>@item.Phone</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditAuthor(item.AuthorId)" class="btn btn-secondary"><i class="fas fa-edit"></i></button>
+                    <button @onclick="() => DeleteAuthor(item.AuthorId)" class="btn btn-danger"><i class=" fas fa-trash"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*<button @onclick="CreateAuthor">Add Author</button>
+*@
+
+
+@code {
+
+    private Author? editedAuthor;
+
+    [Inject]
+    public IAuthorService AuthorService { get; set; }
+    public IEnumerable<Author> AuthorsList { get; set; } = new List<Author>();
+    protected override async Task OnInitializedAsync()
+    {
+        AuthorsList = (await AuthorService.GetAuthors()).ToList();
+    }
+
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    public void CreateAuthor()
+    {
+        NavigationManager.NavigateTo("/create-Author");
+    }
+
+
+    public async void EditAuthor(int id)
+    {
+        // Navigate to the edit page
+        NavigationManager.NavigateTo($"/edit-Author/{id}");
+
+        try
+        {
+            // Get the Author by its ID
+            editedAuthor = await AuthorService.GetAuthorById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Author: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteAuthor(int id)
+    {
+        var deletedItem = AuthorsList.FirstOrDefault(item => item.AuthorId == id);
+        if (deletedItem != null)
+        {
+            await AuthorService.DeleteAuthor(id);
+            await OnInitializedAsync();      //This method for Get Value to lis
+
+            //AuthorsList = (await AuthorService.GetAuthors()).ToList();  //this line work for Get Value to List
+        }
+    }
+
+    public string filterText = "";
+    private string sortBy = "AuthorId"; // Default sorting by AuthorId
+    private bool sortAscending = true;
+    public IEnumerable<Author> GetFilteredAndSortedAuthors()
+    {
+        var filteredFloors = AuthorsList;
+
+        // Filter based on AuthorName
+        if (!string.IsNullOrWhiteSpace(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredFloors = filteredFloors
+                .Where(floor => floor.FirstName.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "FirstName":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.FirstName)
+                    : filteredFloors.OrderByDescending(floor => floor.FirstName);
+                break;
+            case "IsActive":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.IsActive)
+                    : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.AuthorId)
+                    : filteredFloors.OrderByDescending(floor => floor.AuthorId);
+                break;
+        }
+
+        return filteredFloors;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        StateHasChanged(); // Trigger re-render to apply filtering instantly
+    }
+
+    public void SortByAuthorId() => SetSortCriteria("AuthorId");
+    public void SortByFirstName() => SetSortCriteria("AuthorName");
+    public void SortByIsActive() => SetSortCriteria("IsActive");
+
+    public void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+}
+

@@ -1,0 +1,202 @@
+﻿@page "/publisher"
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+@using Library_BlazorUI_Group_A_R53.Pages.Report
+
+<h3>Publisher</h3>
+
+<!-- Add a button to toggle the report section -->
+<button @onclick="ToggleReport" class="btn btn-primary"><i class="fas fa-file"></i> Show Report</button>
+@if (showReport)
+{
+    <div class="container-fluid">
+        <!-- ... Rest of your report section ... -->
+        <PublisherReport />
+    </div>
+}
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by PublisherName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreatePublisher" class="btn btn-primary"><i class="fas fa-plus"></i> Add Publisher</button>
+</div>
+
+<p>Serching Name: @filterText</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th @onclick="SortByPublisherId">Si_No</th>
+            <th @onclick="SortByPublisherName">Name</th>
+            <th @onclick="SortByAddress">Address</th>
+            <th @onclick="SortByEmail">Email</th>
+            <th @onclick="SortByPhoneNumber">ChelPhon</th>
+            <th @onclick="SortByIsActive">Active</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item,index) in GetFilteredAndSortedPublishers().Select((value, index)=>(value, index)))
+        {
+            <tr>
+                <td>@(index+1)</td>
+                <td>@item.PublisherName</td>
+                <td>@item.Address</td>
+                <td>@item.Email</td>
+                <td>@item.PhoneNumber</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditPublisher(item.PublisherId)" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                    <button @onclick="() => DeletePublisher(item.PublisherId)" class="btn btn-danger"><i class=" fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*<button @onclick="CreatePublisher">Add Publisher</button>
+*@
+
+
+@code {
+
+    private Publisher? editedPublisher;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public IPublisherService PublisherService { get; set; }
+   
+
+    public IEnumerable<Publisher> PublishersList { get; set; } = new List<Publisher>();
+    protected override async Task OnInitializedAsync()
+    {
+        PublishersList = (await PublisherService.GetPublishers()).ToList();
+    }
+    
+
+    public void CreatePublisher()
+    {
+        NavigationManager.NavigateTo("/create-publisher");
+    }
+
+
+    public async void EditPublisher(int id)
+    {
+        // Navigate to the edit page
+        NavigationManager.NavigateTo($"/edit-publisher/{id}");
+        try
+        {
+            // Get the Publisher by its ID
+            editedPublisher = await PublisherService.GetPublisherById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Publisher: {ex.Message}");
+        }
+    }
+
+    public async Task DeletePublisher(int id)  //this is Delete method Boizzoni bodda
+    {
+        var deletedItem = PublishersList.FirstOrDefault(item => item.PublisherId == id);
+        if (deletedItem != null)
+        {
+            await PublisherService.DeletePublisher(id);
+            await OnInitializedAsync();      //This method for Get Value to list
+        }
+    }
+
+
+
+    public string filterText = "";
+    private string sortBy = "PublisherId"; // Default sorting by PublisherId
+    private bool sortAscending = true;
+    public IEnumerable<Publisher> GetFilteredAndSortedPublishers()
+    {
+        var filteredFloors = PublishersList;
+
+        // Filter based on PublisherName
+        if (!string.IsNullOrWhiteSpace(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredFloors = filteredFloors
+                .Where(floor => floor.PublisherName.ToLower().Contains(searchText));
+        }
+
+       
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "PublisherName":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.PublisherName)
+                    : filteredFloors.OrderByDescending(floor => floor.PublisherName);
+                break;
+
+            case "IsActive":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.IsActive)
+                    : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                break;
+
+            case "Address":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.Address)
+                    : filteredFloors.OrderByDescending(floor => floor.Address);
+            break;
+
+            case "Email":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.Email)
+                    : filteredFloors.OrderByDescending(floor => floor.Email);
+                 break;
+
+            case "PhoneNumber":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.PhoneNumber)
+                    : filteredFloors.OrderByDescending(floor => floor.PhoneNumber);
+            break;
+
+            default:
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.PublisherId)
+                    : filteredFloors.OrderByDescending(floor => floor.PublisherId);
+               break;
+        }
+
+        return filteredFloors;
+    }
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        StateHasChanged(); // Trigger re-render to apply filtering instantly
+    }
+    
+
+    public void SortByPublisherId() => SetSortCriteria("PublisherId");
+    public void SortByPublisherName() => SetSortCriteria("PublisherName");
+    public void SortByAddress() => SetSortCriteria("Address");
+    public void SortByEmail() => SetSortCriteria("Email");
+    public void SortByPhoneNumber() => SetSortCriteria("PhoneNumber");
+    public void SortByIsActive() => SetSortCriteria("IsActive");
+
+    public void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+
+    private bool showReport = false;
+
+    private void ToggleReport()
+    {
+        showReport = !showReport;
+    }
+}
+

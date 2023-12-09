@@ -1,0 +1,199 @@
+﻿@page "/subscriptionPlan"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>SubscriptionPlan</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by BookFloorName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateSubscriptionPlan" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</div>
+
+<p>Search Name: @filterText</p>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Serial No</th>
+            <th @onclick="SortByBookSubscriptionPlan">PlanName</th>
+            <th @onclick="SortByBookSubscriptionPlan">PlanDescription</th>
+            <th @onclick="SortByBookSubscriptionPlan">PlanPrice</th>
+            <th @onclick="SortByBookSubscriptionPlan">IsActive</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item, index) in GetPagedSubscriptionPlans().Select((value, index) => (value, index)))
+        {
+            <tr>
+                <td>@(((currentPage - 1) * pageSize) + index + 1)</td>
+                <td>@item.PlanName</td>
+                <td>@item.PlanDescription</td>
+                <td>@item.PlanPrice</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditSubscriptionPlan(item.SubscriptionPlanId)" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                    <button @onclick="() => DeleteSubscriptionPlan(item.SubscriptionPlanId)" class="btn btn-danger"><i class=" fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-between">
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" @onclick="() => GoToPage(1)">
+                <span class="page-link">First-Page</span>
+            </li>
+            <li class="page-item" @onclick="() => PreviousPage()">
+                <span class="page-link">Previous</span>
+            </li>
+            <li class="page-item">
+                <span class="page-link">@currentPage</span>
+            </li>
+            <li class="page-item" @onclick="() => NextPage()">
+                <span class="page-link">Next</span>
+            </li>
+            <li class="page-item" @onclick="() => GoToPage(totalPages)">
+                <span class="page-link">Last-Page</span>
+            </li>
+        </ul>
+    </nav>
+    <span>Page @currentPage of @totalPages</span>
+</div>
+
+@code {
+    private SubscriptionPlan? editedSubscriptionPlan;
+    private const int pageSize = 5; // Number of items per page
+    private int currentPage = 1;
+    private string filterText = "";
+    private string sortBy = "SubscriptionPlanId"; // Default sorting by BookFloorId
+    private bool sortAscending = true;
+    private IEnumerable<SubscriptionPlan> SubscriptionPlanList = new List<SubscriptionPlan>();
+
+
+    [Inject]
+    public ISubscriptionPlanService SubscriptionPlanService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private int totalPages => (int)Math.Ceiling((double)filteredAndSortedSubscriptionPlan.Count() / pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        SubscriptionPlanList = (await SubscriptionPlanService.GetSubscriptionPlans()).ToList();
+    }
+
+
+
+    public void CreateSubscriptionPlan()
+    {
+        NavigationManager.NavigateTo("/create-subscriptionPlan");
+    }
+
+    public async void EditSubscriptionPlan(int id)
+    {
+        NavigationManager.NavigateTo($"/edit-subscriptionPlan/{id}");
+
+        try
+        {
+            editedSubscriptionPlan = await SubscriptionPlanService.GetSubscriptionById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading SubscriptionPlan: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteSubscriptionPlan(int id)
+    {
+        var deletedItem = SubscriptionPlanList.FirstOrDefault(item => item.SubscriptionPlanId == id);
+        if (deletedItem != null)
+        {
+            await SubscriptionPlanService.DeleteSubscriptionPlan(id);
+            await OnInitializedAsync();
+        }
+    }
+
+    private IEnumerable<SubscriptionPlan> GetPagedSubscriptionPlans()
+    {
+        var filteredSubscriptionPlan = filteredAndSortedSubscriptionPlan.ToList();
+
+        int startIndex = (currentPage - 1) * pageSize;
+        return filteredSubscriptionPlan.Skip(startIndex).Take(pageSize);
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+            currentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
+
+    private void GoToPage(int page)
+    {
+        if (page >= 1 && page <= totalPages)
+            currentPage = page;
+    }
+
+    private IEnumerable<SubscriptionPlan> filteredAndSortedSubscriptionPlan
+    {
+        get
+        {
+            var filteredSubscriptionPlan= SubscriptionPlanList;
+
+            if (!string.IsNullOrWhiteSpace(filterText))
+            {
+                var searchText = filterText.Trim().ToLower();
+                filteredSubscriptionPlan = filteredSubscriptionPlan.Where(SubscriptionPlan => SubscriptionPlan.PlanName.ToLower().Contains(searchText));
+            }
+
+            switch (sortBy)
+            {
+                case "PlanPrice":
+                    filteredSubscriptionPlan = sortAscending
+                        ? filteredSubscriptionPlan.OrderBy(SubscriptionPlan => SubscriptionPlan.PlanPrice)
+                        : filteredSubscriptionPlan.OrderByDescending(SubscriptionPlan => SubscriptionPlan.PlanPrice);
+                    break;
+                case "IsActive":
+                    filteredSubscriptionPlan = sortAscending
+                        ? filteredSubscriptionPlan.OrderBy(SubscriptionPlan => SubscriptionPlan.IsActive)
+                        : filteredSubscriptionPlan.OrderByDescending(SubscriptionPlan => SubscriptionPlan.IsActive);
+                    break;
+                default:
+                    filteredSubscriptionPlan = sortAscending
+                        ? filteredSubscriptionPlan.OrderBy(SubscriptionPlan => SubscriptionPlan.SubscriptionPlanId)
+                        : filteredSubscriptionPlan.OrderByDescending(SubscriptionPlan => SubscriptionPlan.SubscriptionPlanId);
+                    break;
+            }
+
+            return filteredSubscriptionPlan.ToList();
+        }
+    }
+
+    private void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value?.ToString();
+        currentPage = 1;
+    }
+
+    private void SortByBookSubscriptionPlan()
+    {
+        if (sortBy == "PlanName")
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = "PlanName";
+        currentPage = 1;
+    }
+}

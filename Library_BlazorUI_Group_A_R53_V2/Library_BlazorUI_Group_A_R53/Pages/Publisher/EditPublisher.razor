@@ -1,0 +1,65 @@
+﻿@page "/edit-publisher/{id}"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>Edit Publisher</h3>
+
+<!-- Publisher editing form -->
+<form>
+    <div class="form-group">
+        <label for="address">Address:</label>
+        <input type="text" class="form-control" id="address" @bind="editedPublisher.Address">
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" @bind="editedPublisher.Email">
+    </div>
+
+    <div class="form-group">
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="tel" class="form-control" id="phoneNumber" @bind="editedPublisher.PhoneNumber">
+    </div>
+
+    <div class="form-check">
+        <label for="isActive">Active:</label>
+        <input type="checkbox" class="form-check-input" id="isActive" @bind="editedPublisher.IsActive">
+    </div>
+    <button type="button" class="btn btn-primary" @onclick="UpdatePublisher">Update</button>
+</form>
+
+
+
+@code {
+    private Publisher editedPublisher = new Publisher();
+
+    [Parameter]
+    public string? id { get; set; }
+
+    [Inject]
+    private IPublisherService PublisherService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int publisherId))
+        {
+            editedPublisher = await PublisherService.GetPublisherById(publisherId);
+        }
+    }
+
+    private async Task UpdatePublisher()
+    {
+        try
+        {
+            await PublisherService.UpdatePublisher(editedPublisher);
+            NavigationManager.NavigateTo("/publisher");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating Publisher: {ex.Message}");
+        }
+    }
+}

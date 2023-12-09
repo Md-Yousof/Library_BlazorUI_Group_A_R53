@@ -1,0 +1,98 @@
+﻿@page "/edit-subcategory/{id}"
+@using Library_BlazorUI_Group_A_R53.Data.Models
+@using Library_BlazorUI_Group_A_R53.Services
+
+
+<div class="form-control">
+    <div class="row">
+        <div class="col-lg-9">
+            <h2>Create SubCategory</h2>
+        </div>
+        <div class="col-lg-3 text-right">
+            <a href="/subcategory" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="form-group">
+
+                <label for="CategoryId">Category:</label>
+                <select class="form-control" @bind="editedSubcategory.CategoryId">
+                    <option value=""> --Select Category--</option>
+                    @foreach (var floor in categories)
+                    {
+                        <option value="@floor.CategoryId">@floor.CategoryName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="SubcategoryName">Sub_Name:</label>
+                <input type="text" class="form-control" id="SubcategoryName" @bind="editedSubcategory.Name" />
+            </div>
+
+
+            <div class="form-group">
+                <label for="SubcategoryName">DDCCode:</label>
+                <input type="text" class="form-control" id="SubcategoryName" @bind="editedSubcategory.DDCCode" />
+            </div>
+            <div class="form-group">
+                <label for="SubcategoryName">Active:</label>
+                <input type="checkbox" class="form-check" id="SubcategoryName" @bind="editedSubcategory.IsActive" />
+            </div>
+            <button class="btn btn-primary" @onclick="UpdateSubCategory">Create Subcategory</button>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+   
+    [Parameter]
+    public string id { get; set; }
+    private Subcategory editedSubcategory = new Subcategory();
+
+   
+    private List<Category> categories = new List<Category>(); //Assuming you have a way to fetch the book floors
+    [Inject]
+    private ISubcategoryService SubcategorySeivice { get; set; }
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int SubcategoryId))
+        {
+            editedSubcategory = await SubcategorySeivice.GetSubategoryById(SubcategoryId);
+            categories = (await CategoryService.GetCategories()).ToList(); //for get Categories Dropdown List
+        }
+    }
+
+    private async Task UpdateSubCategory()
+    {
+        try
+        {
+            await SubcategorySeivice.UpdateSubcategory(editedSubcategory);
+            NavigationManager.NavigateTo("/subcategory");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating Subcategory: {ex.Message}");
+        }
+
+    }
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    // Fetch book floors from the service
+    //    categories = (await CategoryService.GetCategories()).ToList();
+
+    //    await base.OnInitializedAsync();
+    //}
+}

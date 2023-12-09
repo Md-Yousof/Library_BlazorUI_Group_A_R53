@@ -1,0 +1,118 @@
+﻿@page "/edit-shelf/{id}"
+@using Library_BlazorUI_Group_A_R53.Data.Models
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Services.ShelfService;
+
+<div class="row">
+    <div class="col-lg-9">
+        <h3>Edit Shelf</h3>
+    </div>
+    <div class="col-lg-3 text-right">
+        <a href="/shelf" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+    </div>
+</div>
+<div class="form-control" style="background-color:gainsboro">
+    <div class="row">
+        <div class="col-5">
+            <div class="form-group">
+                <label for="ShelfName">Shelf Name:</label>
+                <input type="text" class="form-control" id="ShelfName" @bind="editedShelf.ShelfName" />
+            </div>
+
+            <div class="form-group">
+                <label for="BookFloorId">Book Floor:</label>
+                <select class="form-control" @bind="editedShelf.BookFloorId">
+                    <option value="">-- Select Book Floor --</option>
+                    @foreach (var floor in bookFloors)
+                    {
+                        <option value="@floor.BookFloorId">@floor.BookFloorName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ShelfName">Is Active:</label>
+                <input type="checkbox" class="form-check" id="ShelfName" @bind="editedShelf.IsActive" />
+            </div>
+
+            <div class="form-group">
+
+
+                @for (var i = 0; i < editedShelf.BookRacks.Count; i++)
+                {
+                    var index = i;
+                    var bookRack = editedShelf.BookRacks[i];
+
+                    <h5> @(i + 1). Rack Name:</h5>
+
+                    <div class="form-group">
+                        @*<label>BookRack Name:</label>*@
+                        <input type="text" class="form-control" @bind="bookRack.BookRackName" />
+                    </div>
+
+                    <button type="button" class="btn btn-danger"
+                    @onclick="@(() => editedShelf.BookRacks.RemoveAt(index))">
+                        Remove
+                    </button>
+
+                }
+                <div class="form-group">
+                    <button type="button" class="btn btn-secondary"
+                    @onclick="@(() => editedShelf.BookRacks.Add(new BookRack()))">
+                        +Add Book Rack
+                    </button>
+                </div>
+
+            </div>
+
+            <button class="btn btn-light" @onclick="Clear">Clear</button>
+            <button class="btn btn-primary" @onclick="UpdateShelf">Update</button>
+
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string id { get; set; }
+
+    private Shelf editedShelf = new Shelf();
+    private List<BookFloor> bookFloors = new List<BookFloor>();
+   // private List<BookRack> bookRacks = new List<BookRack> { new BookRack() };  // Initialize with one BookRack
+
+    [Inject]
+    private IShelfService ShelfService { get; set; }
+    [Inject]
+    private IBookFloorService BookFloorService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int ShelfId))
+        {
+            editedShelf = await ShelfService.GetShelfById(ShelfId);
+            bookFloors = (await BookFloorService.GetBookFloors()).ToList(); //for get Categories Dropdown List
+        }
+    }
+
+    private async Task UpdateShelf()
+    {
+        try
+        {
+            await ShelfService.UpdateShelf(editedShelf);
+            NavigationManager.NavigateTo($"/shelf");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating Subcategory: {ex.Message}");
+        }
+
+    }
+    private void Clear()
+    {
+        editedShelf = new Shelf();
+    }
+}

@@ -1,0 +1,303 @@
+﻿@page "/create-book"
+@using Library_BlazorUI_Group_A_R53.Data.Models
+@using Library_BlazorUI_Group_A_R53.Services
+
+@*@using System.Text.Json;*@
+
+<div class="row">
+    <div class="col-lg-9">
+        <h2>Create Book</h2>
+    </div>
+    <div class="col-lg-3 text-right">
+        <a href="/book" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+    </div>
+</div>
+
+<div class="form-control" style="background-color: gainsboro;">
+    <div class="row">
+        <div class="col-5">
+
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" name="title" @bind="newBook.Title" />
+            </div>
+
+            <div class="form-group">
+                <label for="ISBN">ISBN:</label>
+                <input type="text" class="form-control" id="ISBN" @bind="newBook.ISBN" />
+            </div>
+
+            <div class="form-group">
+                <label for="Publisher">Publisher:</label>
+                <select class="form-control" @bind="newBook.PublisherId">
+                    <option value="">-- Select publisher --</option>
+                    @foreach (var publisherName in Publishers)
+                    {
+                        <option value="@publisherName.PublisherId">@publisherName.PublisherName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="PublishedYear">Published Year:</label>
+                <input type="date" class="form-control" id="PublishedYear" @bind="newBook.PublishedYear" />
+            </div>
+
+            <div class="form-group">
+                <label for="Edition">Edition:</label>
+                <input type="text" class="form-control" id="Edition" @bind="newBook.Edition" />
+            </div>
+
+            <div class="form-group">
+                <label for="TotalCopies">Total Copies:</label>
+                <input type="number" class="form-control" id="TotalCopies" @bind="newBook.TotalCopies" />
+            </div>
+
+            <div class="form-group">
+                <label for="Language">Language:</label>
+                <input type="text" class="form-control" id="Language" @bind="newBook.Language" />
+            </div>
+
+            <div class="form-group">
+                <label for="Description">Description:</label>
+                <textarea class="form-control" id="Description">@newBook.Description</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="BookPrice">Book Price:</label>
+                <input type="number" step="0.01" class="form-control" id="BookPrice" @bind="newBook.BookPrice" />
+            </div>
+
+            @*<div class="form-group">
+            <label for="RentPrice">Rent Price:</label>
+            <input type="text" class="form-control" id="RentPrice" value="newBook.RentPrice" readonly />
+            </div>*@
+
+
+            <div class="form-group">
+                <label for="DDCCode">DDC Code:</label>
+                <input type="text" class="form-control" id="DDCCode" @bind="newBook.DDCCode" />
+            </div>
+
+            <div class="form-group">
+                <label for="IsActive">Is Active:</label>
+                <input type="checkbox" class="form-check" id="IsActive" @bind="newBook.IsActive" />
+                @*<InputCheckbox class="form-check" id="IsActive"  @bind-Value="newBook.IsActive">Is Active</InputCheckbox>*@
+            </div>
+
+            @*<div class="form-group">
+            <label for="Cover">Cover:</label>
+            <input type="file" class="form-control-file" id="Cover" @onchange="OnCoverSelected"/>
+            </div>*@
+
+
+          @*  <div class="form-group">
+                <label for="CoverFileName">Author Image:</label>
+                <InputFile class="form-control-file" id="CoverFileName" OnChange="OnCoverSelected" />
+                @if (!string.IsNullOrEmpty(newBook.CoverFileName))
+                {
+                    <img src="@newBook.CoverFileName" alt="Product Image" />
+                    <input type="hidden" name="ProductImage" @bind="newBook.CoverFileName" />
+                }
+            </div>*@
+
+
+            <div class="form-group">
+                <label for="IsDigital">Is Digital:</label>
+                <input type="checkbox" class="form-check" id="IsDigital" @bind="newBook.IsDigital" />
+            </div>
+
+            @*  <div class="form-group">
+            <label for="EBook">EBook:</label>
+            <input type="file" class="form-control-file" id="EBook" @onchange="OnEBookSelected" />
+            </div>*@
+
+            <div class="form-group">
+                <label for="PublisherAgreement">Publisher Agreement:</label>
+                <input type="checkbox" class="form-check" id="PublisherAgreement" @bind="newBook.PublisherAgreement" />
+            </div>
+
+            @* <div class="form-group">
+            <label for="AgreementBookCopy">Agreement Book Copy:</label>
+            <input type="file" class="form-control-file" id="AgreementBookCopy" @onchange="OnAgreementBookCopySelected" />
+            </div>*@
+
+            <div class="form-group">
+                <label for="Category">Category Name: </label>
+                <select class="form-control" @bind="newBook.CategoryId">
+                    <option value="">--Select Category--</option>
+                    @foreach (var categoryName in Categories)
+                    {
+                        <option value="@categoryName.CategoryId">@categoryName.CategoryName</option>
+                    }
+                </select>
+
+            </div>
+
+            @* <div class="form-group">
+            <label for="Authors">Authors:</label>
+            <select multiple class="form-control" @bind="newBook.SelectedAuthorIds">
+            @foreach (var author in Authors)
+            {
+            <option value="@author.AuthorId">@($"{author.FirstName} {author.LastName}")</option>
+            }
+            </select>
+            </div>*@
+
+            <button class="btn btn-primary" @onclick="CreateBooks">Create</button>
+            @*<button class="btn btn-light" @onclick="Clear">All Clear</button>*@
+           
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+
+    //private List<BookAuthor> BookAuthors = new List<BookAuthor>();
+    //private BookAuthor newBookAuthor = new BookAuthor();
+    //private List<Author> Author = new List<Author>();
+
+    private Book newBook = new Book();
+    private List<Publisher> Publishers = new List<Publisher>();
+    private List<Category> Categories = new List<Category>();
+    private List<Author> Authors = new List<Author>();
+
+
+    [Inject]
+    private IBookService BookService { get; set; }
+    [Inject]
+    private IBookFloorService BookFloorService { get; set; }
+    [Inject]
+    private IPublisherService PublisherService { get; set; }
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private IAuthorService AuthorService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+
+    //private async Task HandleFileInputChange(InputFileChangeEventArgs e)
+    //{
+    //    var file = e.File;
+    //    if (file != null)
+    //    {
+    //        var buffer = new byte[file.Size];
+    //        await file.OpenReadStream().ReadAsync(buffer);
+    //        newBook.CoverFileName = "data:image/jpeg;base64," + Convert.ToBase64String(buffer);
+    //    }
+
+    //}
+
+
+    //private async Task OnCoverSelected(InputFileChangeEventArgs e)
+    //{
+    //    var file = e.File;
+    //    if (file != null)
+    //    {
+    //        var buffer = new byte[file.Size];
+    //        await file.OpenReadStream().ReadAsync(buffer);
+    //        newBook.Cover = "data:image/jpeg;base64," + Convert.ToBase64String(buffer);
+    //    }
+    //}
+
+    // Handle file input for e-book
+
+    //private async Task OnEBookSelected(InputFileChangeEventArgs e)
+    //{
+    //    var file = e.File;
+    //    if (file != null)
+    //    {
+    //        // Handle the e-book file here, if needed
+    //    }
+    //}
+
+    // Handle the form submission to create a new book
+    private async Task CreateBooks()
+    {
+        try
+        {
+            // Create a new MultipartFormDataContent to send data as a form
+            var formData = new MultipartFormDataContent();
+
+            // Add your book data to the form data
+            formData.Add(new StringContent(newBook.Title ??""), "Title");
+            formData.Add(new StringContent(newBook.ISBN ??""), "ISBN");
+            formData.Add(new StringContent(newBook.PublisherId.ToString()), "PublisherId");
+            formData.Add(new StringContent(newBook.PublishedYear.ToString("yyyy-MM-dd")), "PublishedYear");
+            formData.Add(new StringContent(newBook.Edition ??""), "Edition");
+            formData.Add(new StringContent(newBook.TotalCopies.ToString() ??""), "TotalCopies");
+            formData.Add(new StringContent(newBook.Language ??""), "Language");
+            formData.Add(new StringContent(newBook.Description ??""), "Description");
+            formData.Add(new StringContent(newBook.BookPrice?.ToString() ??"0"), "BookPrice");
+            formData.Add(new StringContent(newBook.DDCCode ??""), "DDCCode");
+            formData.Add(new StringContent(newBook.IsActive.ToString()), "IsActive");
+            formData.Add(new StringContent(newBook.IsDigital.ToString()), "IsDigital");
+            formData.Add(new StringContent(newBook.PublisherAgreement.ToString()), "PublisherAgreement");
+            formData.Add(new StringContent(newBook.CategoryId.ToString()), "CategoryId");
+
+            // Add the base64-encoded image to the form data
+            //formData.Add(new StringContent(newBook.CoverFileName), "Cover");
+
+            // Handle e-book file input if needed
+
+            // Send the form data to the BookService to create the book
+            /* var createdBook = */ await BookService.CreateBookAsync(formData);
+            Console.WriteLine(formData);
+            ;
+
+            //if (createdBook != null)
+            //{
+            //    // Book created successfully, you can handle the success case here.
+            //    NavigationManager.NavigateTo("/book");
+            //}
+            //else
+            //{
+            //    // Handle the case where the service call returns null or any other error condition.
+            //    Console.WriteLine("An error occurred while creating the book.");
+            //}
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred while creating the book:");
+            Console.WriteLine(ex.Message);
+        }
+        
+        NavigationManager.NavigateTo("/book");
+
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Publishers = (await PublisherService.GetPublishers()).ToList();
+        Categories = (await CategoryService.GetCategories()).ToList();
+        //Authors = (await AuthorService.GetAuthors()).ToList();
+
+        await base.OnInitializedAsync();
+    }
+
+    //private void Clear()
+    //{
+    //    newBook = new Book();
+    //}
+
+
+    //private async Task CreateBooks()
+    //{
+    //    // Map selected author IDs to Author objects
+    //    newBook.BookAuthor = newBook.SelectedAuthorIds
+    //        .Select(authorId => new BookAuthor { AuthorId = authorId })
+    //        .ToList();
+
+    //    await BookService.CreateBook(newBook);
+    //    NavigationManager.NavigateTo("/book");
+    //}
+    
+}

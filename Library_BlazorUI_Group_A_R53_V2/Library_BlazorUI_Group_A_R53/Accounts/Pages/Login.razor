@@ -1,0 +1,88 @@
+﻿@page "/login"
+@using Library_BlazorUI_Group_A_R53.Accounts.Models
+@using Library_BlazorUI_Group_A_R53.Accounts.Services
+@*@using Library_BlazorUI_Group_A_R53.Accounts*@
+@inject UserAccountService userAccountService
+@inject AuthenticationStateProvider authStateProvider
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<h3>Login</h3>
+
+<EditForm Model="loginDto" OnValidSubmit="Loginmain">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Username">User Name</label>
+        <InputText id="Username" class="form-control" @bind-Value="loginDto.Username" />
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <InputText id="Password" type="password" class="form-control" @bind-Value="loginDto.Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+
+    //private LoginDto loginDto = new LoginDto();
+
+    //private async Task Loginmain()
+    //{
+    //    var user = await AuthService.Login(loginDto);
+
+    //    if (user != null)
+    //    {
+    //        // Check if the user is an admin based on their email
+    //        if (user.UserName == "admin@mail.com")
+    //        {
+    //            // Notify the component to re-render
+    //            StateHasChanged();
+    //            Navigation.NavigateTo("/");
+    //            await JSRuntime.InvokeVoidAsync("location.reload");
+    //        }
+    //        else
+    //        {
+
+    //            // For non-admin users, navigate to the home page directly
+    //            Navigation.NavigateTo("");
+
+    //        }
+    //    }
+    //    else
+    //    {
+    //        // Handle login failure
+    //    }
+    //}
+
+    private LoginDto loginDto = new LoginDto();
+    private async Task Loginmain()
+    {
+        var user = await AuthService.Login(loginDto);
+        var userAccount = userAccountService.GetByUserName(loginDto.Username);
+        if (user != null)
+        {
+            var coustomAuthStateProvider = (CustomAuthentication)authStateProvider;
+            await coustomAuthStateProvider.UpdateAuthenticationState(new LoginDto
+                {
+                    Username = userAccount.Username,
+                    Role = userAccount.Role
+                });
+
+            Navigation.NavigateTo("/", true);
+        }
+        else
+        {
+            // Handle login failure
+
+            if (userAccount == null || userAccount.Password != loginDto.Password)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Invalid User name or password");
+                return;
+            }
+        }
+    }
+
+}

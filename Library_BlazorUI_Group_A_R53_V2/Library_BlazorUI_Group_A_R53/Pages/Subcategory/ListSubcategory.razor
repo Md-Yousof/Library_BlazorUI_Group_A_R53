@@ -1,0 +1,198 @@
+﻿@page "/subcategory"
+
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>Subcategory</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by BookFloorName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateSubcategory" class="btn btn-primary"><i class="fas fa-plus"></i> Add Subcategory</button>
+</div>
+<p>Serch Name: @filterText</p>
+
+<!-- Table with Sorting -->
+<table class="table">
+    <thead>
+        <tr>
+            <th @onclick="SortBySubcategoryId">sirial No</th>
+            <th @onclick="SortBySubcategoryName">DDCCode</th>
+            <th @onclick="SortByName">Category</th>
+            <th @onclick="SortByCategoryId">Sub Category</th>
+            <th @onclick="SortByIsActive">Active</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item, index) in GetFilteredAndSortedSubcategorys().Select((value, index) => (value, index)))
+        {
+            <tr>
+                <td>@(index+1)</td>
+                <td>@item.DDCCode</td>
+               @* <td>@item.CategoryId</td>  this is for CategoryName*@ 
+                <td>@item.CategoryName</td>
+                <td>@item.Name</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditSubcategory(item.SubcategoryId)" class="btn btn-secondary"><i class=" fas fa-edit"></i></button>
+                    <button @onclick="() => DeleteSubcategory(item.SubcategoryId)" class="btn btn-danger"><i class=" fas fa-trash"></i></button>
+                    <button @onclick="() => DetailsSubcategory(item.SubcategoryId)" class="btn btn-info"><i class="fas fa-info-circle"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private Subcategory? Subcategory;
+    //public IEnumerable<Subcategory> SubcategorysList { get; set; } = new List<Subcategory>();
+    public IEnumerable<Subcategory> SubcategorysList = new List<Subcategory>();
+
+    [Inject]
+    public ICategoryService CategoryService { get; set; }
+    [Inject]
+    public ISubcategoryService SubcategoryService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SubcategorysList = (await SubcategoryService.GetSubcategories()).ToList();
+        await GetCategoryName();
+    }
+
+    private async Task GetCategoryName()
+    {
+       foreach (var shelf in SubcategorysList)  //this is for floorName show in Shelf List
+       {
+         // Fetch the BookFloor by its ID
+            var category = await CategoryService.GetCategoryById(shelf.CategoryId);
+
+            if (category != null)
+            {
+                shelf.CategoryName = category.CategoryName;
+            }
+       }
+    
+    }
+
+
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    public void CreateSubcategory()
+    {
+        NavigationManager.NavigateTo("/create-subcategory");
+    }
+
+
+    public async void EditSubcategory(int id)
+    {
+        // Navigate to the edit page
+        NavigationManager.NavigateTo($"/edit-subcategory/{id}");
+
+        try
+        {
+            // Get the Subcategory by its ID
+            Subcategory = await SubcategoryService.GetSubategoryById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Subcategory: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteSubcategory(int id)
+    {
+        var deletedItem = SubcategorysList.FirstOrDefault(item => item.SubcategoryId == id);
+
+        //var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this order?");
+
+        if (deletedItem != null)
+        {
+            await SubcategoryService.DeleteSubcategory(id);
+            await OnInitializedAsync();      //This method for Get Value to lis
+
+        }
+    }
+
+    public async Task DetailsSubcategory(int id)
+    {
+        var detail = SubcategorysList.FirstOrDefault(item => item.SubcategoryId == id);
+        if (detail != null)
+        {
+            NavigationManager.NavigateTo($"/details-shelf/{id}");
+        }
+    }
+
+    public string filterText = "";
+    private string sortBy = "SubcategoryId"; // Default sorting by SubcategoryId
+    private bool sortAscending = true;
+    public IEnumerable<Subcategory> GetFilteredAndSortedSubcategorys()
+    {
+        var filteredFloors = SubcategorysList;
+
+        // Filter based on SubcategoryName
+        if (!string.IsNullOrWhiteSpace(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredFloors = filteredFloors
+                .Where(floor => floor.Name.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "SubcategoryName":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.Name)
+                    : filteredFloors.OrderByDescending(floor => floor.Name);
+                break;
+            case "IsActive":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.IsActive)
+                    : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                break;
+
+            case "CategoryId":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.CategoryId)
+                    : filteredFloors.OrderByDescending(floor => floor.CategoryId);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.SubcategoryId)
+                    : filteredFloors.OrderByDescending(floor => floor.SubcategoryId);
+                break;
+        }
+
+        return filteredFloors;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        StateHasChanged(); // Trigger re-render to apply filtering instantly
+    }
+
+    public void SortBySubcategoryId() => SetSortCriteria("Sub-Id");
+    public void SortByName() => SetSortCriteria("Name");
+    public void SortByIsActive() => SetSortCriteria("IsActive");
+    public void SortByCategoryId() => SetSortCriteria("CategoryId");
+    public void SortBySubcategoryName() => SetSortCriteria("Name");
+    //public void SortByIsActive() => SetSortCriteria("IsActive");
+
+    public void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+}

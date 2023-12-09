@@ -1,0 +1,197 @@
+﻿@page "/bookfloor"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>BookFloor</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by BookFloorName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateBookFloor" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</div>
+
+<p>Search Name: @filterText</p>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Serial No</th>
+            <th @onclick="SortByBookFloorName">BookFloorName</th>
+            <th @onclick="SortByBookFloorName">IsActive</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item, index) in GetPagedBookFloors().Select((value, index) => (value, index)))
+        {
+            <tr>
+                <td>@(((currentPage - 1) * pageSize) + index + 1)</td>
+                <td>@item.BookFloorName</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditBookFloor(item.BookFloorId)" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                    <button @onclick="() => DeleteBookFloor(item.BookFloorId)" class="btn btn-danger"><i class=" fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-between">
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" @onclick="() => GoToPage(1)">
+                <span class="page-link">First-Page</span>
+            </li>
+            <li class="page-item" @onclick="() => PreviousPage()">
+                <span class="page-link">Previous</span>
+            </li>
+            <li class="page-item">
+                <span class="page-link">@currentPage</span>
+            </li>
+            <li class="page-item" @onclick="() => NextPage()">
+                <span class="page-link">Next</span>
+            </li>
+            <li class="page-item" @onclick="() => GoToPage(totalPages)">
+                <span class="page-link">Last-Page</span>
+            </li>
+        </ul>
+    </nav>
+    <span>Page @currentPage of @totalPages</span>
+</div>
+
+@code {
+
+    private const int pageSize = 5; // Number of items per page
+    private int currentPage = 1;
+    private string filterText = "";
+    private string sortBy = "BookFloorId"; // Default sorting by BookFloorId
+    private bool sortAscending = true;
+    private IEnumerable<BookFloor> BookFloorsList = new List<BookFloor>();
+
+
+    [Inject]
+    public IBookFloorService BookFloorService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private BookFloor? editedBookFloor;
+
+    private int totalPages => (int)Math.Ceiling((double)filteredAndSortedBookFloors.Count() / pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        BookFloorsList = (await BookFloorService.GetBookFloors()).ToList();
+    }
+
+
+
+    public void CreateBookFloor()
+    {
+        NavigationManager.NavigateTo("/create-bookFloor");
+    }
+
+    public async void EditBookFloor(int id)
+    {
+        NavigationManager.NavigateTo($"/edit-bookFloor/{id}");
+
+        try
+        {
+            editedBookFloor = await BookFloorService.GetBookFloorById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading BookFloor: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteBookFloor(int id)
+    {
+        var deletedItem = BookFloorsList.FirstOrDefault(item => item.BookFloorId == id);
+        if (deletedItem != null)
+        {
+            await BookFloorService.DeleteBookFloor(id);
+            await OnInitializedAsync();
+        }
+    }
+
+    private IEnumerable<BookFloor> GetPagedBookFloors()
+    {
+        var filteredFloors = filteredAndSortedBookFloors.ToList();
+
+        int startIndex = (currentPage - 1) * pageSize;
+        return filteredFloors.Skip(startIndex).Take(pageSize);
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+            currentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
+
+    private void GoToPage(int page)
+    {
+        if (page >= 1 && page <= totalPages)
+            currentPage = page;
+    }
+
+    private IEnumerable<BookFloor> filteredAndSortedBookFloors
+    {
+        get
+        {
+            var filteredFloors = BookFloorsList;
+
+            if (!string.IsNullOrWhiteSpace(filterText))
+            {
+                var searchText = filterText.Trim().ToLower();
+                filteredFloors = filteredFloors.Where(floor => floor.BookFloorName.ToLower().Contains(searchText));
+            }
+
+            switch (sortBy)
+            {
+                case "BookFloorName":
+                    filteredFloors = sortAscending
+                        ? filteredFloors.OrderBy(floor => floor.BookFloorName)
+                        : filteredFloors.OrderByDescending(floor => floor.BookFloorName);
+                    break;
+                case "IsActive":
+                    filteredFloors = sortAscending
+                        ? filteredFloors.OrderBy(floor => floor.IsActive)
+                        : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                    break;
+                default:
+                    filteredFloors = sortAscending
+                        ? filteredFloors.OrderBy(floor => floor.BookFloorId)
+                        : filteredFloors.OrderByDescending(floor => floor.BookFloorId);
+                    break;
+            }
+
+            return filteredFloors.ToList();
+        }
+    }
+
+    private void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value?.ToString();
+        currentPage = 1;
+    }
+
+    private void SortByBookFloorName()
+    {
+        if (sortBy == "BookFloorName")
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = "BookFloorName";
+        currentPage = 1;
+    }
+}

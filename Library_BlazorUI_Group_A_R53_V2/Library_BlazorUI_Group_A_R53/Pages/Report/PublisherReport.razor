@@ -1,0 +1,121 @@
+﻿@page "/fatchPublisher"
+@*@attribute [Authorize(Roles = "Administrator")]*@
+
+
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+@inject IPublisherService PublisherService;
+@inject IJSRuntime js
+
+
+@if (publishers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+
+
+    <div class="container-fluid">
+        <div class="row">
+
+
+            <div id="printableTable">
+                <div class="page-header">
+                    <!-- Header Section -->
+                    <div class="col-12 bg-primary text-light py-3">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <img src="https://i0.wp.com/fullopportunities.com/wp-content/uploads/2023/09/IsDB-BISEW-IT-Scholarship-Programme.jpg?resize=696%2C418&ssl=1" width="100" height="100" />
+                            </div>
+                            <div class="col-md-10">
+                                <h2 style="color:crimson" class="mb-0" >IsdB Library</h2>
+                                <p class="text-center">Chittagong,NVIT</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+                            <th >SL</th>
+                            <th >Name</th>
+                            <th >Address</th>
+                            <th >Email</th>
+                            <th >Phone Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Publisher in publishers)
+                        {
+                            <tr>
+                                
+                                <td>@Publisher.PublisherId</td>
+                                <td>@Publisher.PublisherName</td>
+                                <td>@Publisher.Address</td>
+                                <td>@Publisher.Email</td>
+                                <td>@Publisher.PhoneNumber</td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <div id="printButton">
+            <button class="btn btn-primary " @onclick="PrintTable">Print Table</button>
+        </div>
+
+
+        <div class="page-footer">
+            <div class="col-12 bg-light py-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-left">Print Date/Time: @DateTime.Now</p>
+                    </div>
+                    <div class="col-12">
+                        <p class="text-center">Powered by Your Company</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+}
+
+@code {
+    private IEnumerable<Publisher> publishers = new List<Publisher>();
+
+    [Parameter]
+    public string Param { get; set; }
+
+    private async Task PrintTable()
+    {
+        // Use JavaScript interop to trigger the browser's print functionality
+        await js.InvokeVoidAsync("printTable", "printableTable");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        publishers = (await PublisherService.GetPublishers()).ToList();
+        await js.InvokeVoidAsync("registerPrintTableFunction");
+    }
+
+
+    
+}

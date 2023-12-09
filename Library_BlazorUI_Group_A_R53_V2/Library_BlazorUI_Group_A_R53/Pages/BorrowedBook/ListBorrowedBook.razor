@@ -1,0 +1,244 @@
+﻿@page "/borrowedBook"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+
+<h3>BorrowedBook</h3>
+
+<input type="text" placeholder="Search by Username" @bind="username" />
+<button @onclick="Search">Search</button>
+
+<h3>BorrowedBook</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>UserId</th>
+            <th>Book Title</th>
+            <th>Call No:</th>
+            <th>BorrowDate</th>
+            <th>DueDate</th>
+            <th>Status</th>
+            <th>IsActive</th>
+            <th>ActualReturnDate</th>
+            <th>Comment</th>
+            <th>RequestTimestamp</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in BorrowedBookList)
+        {
+            <tr>
+                <td>@item.BorrowedBookId</td>
+                <td>@item.UserId</td>
+                @* <td>@item.BookId</td>*@
+                <td>@item.Title</td>
+                @*<td>@item.BookCopyId</td>*@
+                <td>@item.CallNumber</td>
+                <td>@item.BorrowDate</td>
+                <td>@item.DueDate</td>
+                <td>@item.Status</td>
+                <td>@item.IsActive</td>
+                <td>@item.ActualReturnDate</td>
+                <td>@item.Comment</td>
+                <td>@item.RequestTimestamp</td>
+                <td>
+
+                    <div>
+
+                        @if (item.Status == "Requested")
+                        {
+                            <button @onclick="() => ApproveRequest(item.BorrowedBookId)" class="btn btn-success">Approve</button>
+                            <button @onclick="() => CancelRequest(item.BorrowedBookId)" class="btn btn-danger">Cancel</button>
+                        }
+                        @if (item.Status == "Cancelled")
+                        {
+                            <button @onclick="() => ApproveRequest(item.BorrowedBookId)" class="btn btn-success">Approve</button>
+                        }
+
+                        @if (item.Status == "Approved")
+                        {
+                            <button @onclick="() => ReturnRequest(item.BorrowedBookId)" class="btn btn-success">Return</button>
+                        }
+
+                        @if (item.Status == "Returned")
+                        {
+                            <button @onclick="() => ApproveRequest(item.BorrowedBookId)" class="btn btn-success">Approve</button>
+                        }
+
+                    </div>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@foreach (var item in BorrowedBookList)
+{
+    <div class="mt-4">
+
+        @if (item.Status == "Approved" && showCommentFormId == item.BorrowedBookId)
+        {
+            <button @onclick="() => ReturnRequest(item.BorrowedBookId)" class="btn btn-danger">Refress</button>
+
+            <div class="mt-2">
+                <label for="remarks">Remarkes:</label>
+                <textarea @bind="remarks" class="form-control"></textarea>
+
+                <label for="miscFine">Other Fines:</label>
+                <textarea @bind="miscFine" class="form-control"></textarea>
+                <button @onclick="() => ConfirmReturn(item.BorrowedBookId)" class="btn btn-primary mt-2">Confirm</button>
+            </div>
+        }
+    </div>
+}
+
+
+@foreach (var item in BorrowedBookList)
+{
+    <div class="mt-4">
+
+        @if (item.Status == "Requested" && showCommentFormId == item.BorrowedBookId)
+        {
+            <button @onclick="() => CancelRequest(item.BorrowedBookId)" class="btn btn-danger">Refresh</button>
+
+            <div class="mt-2">
+                <label for="comment">Comment:</label>
+                <textarea @bind="comment" class="form-control"></textarea>
+                <button @onclick="() => ConfirmCancel(item.BorrowedBookId)" class="btn btn-primary mt-2">Confirm</button>
+            </div>
+        }
+    </div>
+}
+
+
+
+@code {
+    private string username;
+
+    public IEnumerable<BorrowedBook> BorrowedBookList { get; set; } = new List<BorrowedBook>();
+    private int showCommentFormId = -1;
+    private string comment;
+    private string remarks;
+    private decimal miscFine;
+    private int confirmBorrowedBookId = -1;
+
+    [CascadingParameter]
+    // public DialogFactory Dialogs { get; set; }
+
+    [Inject]
+    public IBorrowedBookService BorrowedBookService { get; set; }
+    [Inject]
+    public IBookService BookService { get; set; }
+    [Inject]
+    public IBookCopyService BookCopyService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        BorrowedBookList = await BorrowedBookService.GetBorrowedBooks();
+        await GetBookTitle();  //this for to load data in List
+        await GetCallNumberFromCopy();  //for to load data in list
+    }
+
+
+    private async Task Search()
+    {
+        BorrowedBookList = await BorrowedBookService.GetUserName(username);
+    }
+
+
+
+    private async Task CancelRequest(int borrowedBookId)
+    {
+        showCommentFormId = borrowedBookId;
+    }
+
+    private async Task ConfirmCancel(int borrowedBookId)
+    {
+        try
+        {
+            await BorrowedBookService.CancelBorrowedBook(borrowedBookId, comment);
+
+            showCommentFormId = -1;
+        }
+        catch (Exception ex)
+        {
+            // Handle the exception
+        }
+        await OnInitializedAsync();
+    }
+
+
+    private async Task ReturnRequest(int borrowedBookId)
+    {
+        showCommentFormId = borrowedBookId;
+    }
+
+    private async Task ConfirmReturn(int borrowedBookId)
+    {       
+            await BorrowedBookService.ReturnBorrowedBook(borrowedBookId, remarks, miscFine);
+            showCommentFormId = -1;
+        
+        await OnInitializedAsync();
+    }
+
+
+
+    private async Task ApproveRequest(int borrowedBookId)
+    {
+       
+             await BorrowedBookService.ApproveBorrowedBook(borrowedBookId);           
+             await OnInitializedAsync();
+    }
+
+
+    public async Task GetCallNumberFromCopy() //This Method for get CallNume in List instad of BookCopyId
+    {
+        foreach (var borrowedBook in BorrowedBookList)
+        {
+            try
+            {
+                // Fetch the BookFloor by its ID
+                var bookCopy = await BookCopyService.GetBookCopyById(borrowedBook.BookCopyId);
+
+                if (bookCopy != null)
+                {
+                    borrowedBook.CallNumber = bookCopy.CallNumber;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading BookFloor for ShelfId {borrowedBook.BorrowedBookId}: {ex.Message}");
+            }
+        }
+
+    }
+
+    public async Task GetBookTitle() //This Method for get Book Tilte in List instad of BookId
+    {
+        foreach (var borrowedBook in BorrowedBookList)
+        {
+            try
+            {
+                // Fetch the BookFloor by its ID
+                var book = await BookService.GetBookById(borrowedBook.BookId);
+
+                if (book != null)
+                {
+                    borrowedBook.Title = book.Title;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading BookFloor for ShelfId {borrowedBook.BorrowedBookId}: {ex.Message}");
+            }
+        }
+
+    }
+
+}

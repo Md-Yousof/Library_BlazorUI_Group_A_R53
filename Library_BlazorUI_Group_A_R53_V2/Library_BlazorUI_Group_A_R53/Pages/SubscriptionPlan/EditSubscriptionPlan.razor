@@ -1,0 +1,77 @@
+﻿@page "/edit-subscriptionPlan/{id}"
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-9">
+            <h2>SubscriptionPlan Create</h2>
+        </div>
+
+        <div class="col-lg-3 text-right">
+            <a href="/subscriptionPlan" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+
+    <form @onsubmit="UpdateSubscriptionPlan" style="background-color:ivory">
+        <div class="col-5">
+            <div class="form-group">
+                <label for="planName">PlanName:</label>
+                <input type="text" class="form-control" id="planName" @bind="editedSubscriptionPlan.PlanName">
+            </div>
+            <div class="form-group">
+                <label for="ddcCode">PlanDescription:</label>
+                <input type="text" class="form-control" id="ddcCode" @bind="editedSubscriptionPlan.PlanDescription">
+            </div>
+
+            <div class="form-group">
+                <label for="ddcCode">PlanPrice:</label>
+                <input type="number" class="form-control" id="ddcCode" @bind="editedSubscriptionPlan.PlanPrice">
+            </div>
+
+            <div class="form-check">
+                <label for="isActive">Active:</label>
+                <input type="checkbox" class="form-check-input" id="isActive" @bind="editedSubscriptionPlan.IsActive">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+
+@code {
+    private SubscriptionPlan editedSubscriptionPlan = new SubscriptionPlan();
+
+    [Parameter]
+    public string id { get; set; }
+
+    [Inject]
+    private ISubscriptionPlanService SubscriptionPlanService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int SubscriptionPlanId))
+        {
+            editedSubscriptionPlan = await SubscriptionPlanService.GetSubscriptionById(SubscriptionPlanId);
+        }
+    }
+
+    private async Task UpdateSubscriptionPlan()
+    {
+        try
+        {
+            await SubscriptionPlanService.UpdateSubscriptionPlan(editedSubscriptionPlan);
+            NavigationManager.NavigateTo("/subscriptionPlan");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating SubscriptionPlan: {ex.Message}");
+        }
+    }
+}
+

@@ -1,0 +1,23 @@
+
+.table[b-j68l30b1dv] {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+    .table th[b-j68l30b1dv] {
+        background-color: rgb(37, 150, 190);
+        color: #fff;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .table td[b-j68l30b1dv] {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .table tbody[b-j68l30b1dv] {
+        background-color: rgb(242, 245, 245, 0.86);
+        padding: 10px;
+    }

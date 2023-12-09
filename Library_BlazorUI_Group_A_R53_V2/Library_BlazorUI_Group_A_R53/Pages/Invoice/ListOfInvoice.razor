@@ -1,0 +1,114 @@
+﻿@page "/invoiceList"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+@inject IInvoiceService InvoiceService
+@inject IBorrowedBookService BorrowedBook
+@inject NavigationManager Navigation
+
+
+@*@inject UserManager<ApplicationUser> UserManager*@
+
+@*@inject HttpClient httpClient*@
+<div class="row">
+    <div class="col-lg-9">
+        <h3>Invoice List</h3>
+    </div>
+
+    <div class="col-lg-3 text-right">
+        <button @onclick="CreateInvoice" class="btn btn-primary"><i class="fas fa-plus"></i>Creat Invoice</button>
+    </div>
+
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>InvoiceID</th>
+            <th>BorrowId</th>
+            <th>UserId</th>
+            <th>Payment</th>
+            <th>Refund</th>
+            <th>TransactionDate</th>
+            <th>Fine</th>
+            <th>Other Fines</th>
+            <th>Remarks</th>
+            <th>TransactionId</th>
+            @* <th>Action</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in InvoiceList)
+        {
+            <tr>
+                <td>@item.InvoiceId</td>
+                <td>@item.BorrowId</td>
+                <td>@item.UserName</td>
+                <td>@item.Payment</td>
+                <td>@item.Refund</td>
+                <td>@item.TransactionDate</td>
+                <td>@item.Fine</td>
+                <td>@item.MiscellaneousFines</td>
+                <td>@item.Remarks</td>
+                <td>@item.TransactionId</td>
+                @*  <td>
+            <button @onclick="Details" class="btn btn-primary"><i class="fas fa-edit">Details</i></button>
+            </td>*@
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@code {
+
+    public IEnumerable<Invoice> InvoiceList { get; set; } = new List<Invoice>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        InvoiceList = (await InvoiceService.GetAllInvoice()).ToList();
+        //var invoices = (await InvoiceService.GetAllInvoice()).ToList();
+        //foreach (var invoice in invoices)
+        //{
+        //    var user = await UserManager.FindByIdAsync(invoice.UserId);
+        //    if (user != null)
+        //    {
+        //        invoice.UserName = user.UserName;
+        //    }
+        //}
+
+       // InvoiceList = invoices;
+    }
+
+    private void CreateInvoice()
+    {
+        Navigation.NavigateTo("/createInvoice");
+    }
+
+
+    //private async Task GetUserName()
+    //{
+    //    foreach (var InvoiceList in InvoiceList)  //this is for floorName show in Shelf List
+    //    {
+    //        // Fetch the BookFloor by its ID
+    //        var userName = httpClient.Application(InvoiceList.UserId);
+
+    //        if (userName != null)
+    //        {
+    //            InvoiceList.UserName = userName.UserName;
+    //        }
+    //    }
+
+    //}
+
+
+
+    //public void Details()
+    //{
+    //    Navigation.NavigateTo("invoiceDetail");
+    //}
+   
+
+}

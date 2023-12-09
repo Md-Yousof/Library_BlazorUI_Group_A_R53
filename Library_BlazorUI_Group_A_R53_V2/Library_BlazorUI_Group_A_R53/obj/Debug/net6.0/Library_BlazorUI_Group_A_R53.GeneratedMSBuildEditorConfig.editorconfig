@@ -1,0 +1,197 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Library_BlazorUI_Group_A_R53
+build_property.RootNamespace = Library_BlazorUI_Group_A_R53
+build_property.ProjectDir = D:\IDB_R53_YOUSOF\Final_Project_plan\Library_Blazor_Group_A_finalPro\Library_BlazorUI_Group_A_R53\Library_BlazorUI_Group_A_R53\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\IDB_R53_YOUSOF\Final_Project_plan\Library_Blazor_Group_A_finalPro\Library_BlazorUI_Group_A_R53\Library_BlazorUI_Group_A_R53
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Accounts/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = QWNjb3VudHNcUGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Accounts/Pages/Registration.razor]
+build_metadata.AdditionalFiles.TargetPath = QWNjb3VudHNcUGFnZXNcUmVnaXN0cmF0aW9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Author/CreateAuthor.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aG9yXENyZWF0ZUF1dGhvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Author/EditAuthor.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aG9yXEVkaXRBdXRob3IucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BookCopy/CreateBookCopy.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va0NvcHlcQ3JlYXRlQm9va0NvcHkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BookCopy/EditBookCopy.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va0NvcHlcRWRpdEJvb2tDb3B5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BookFloor/BookFloorCreate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va0Zsb29yXEJvb2tGbG9vckNyZWF0ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BookFloor/BookFloorEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va0Zsb29yXEJvb2tGbG9vckVkaXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Book/CreateBook.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va1xDcmVhdGVCb29rLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Category/CreateCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlcQ3JlYXRlQ2F0ZWdvcnkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Category/EditCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlcRWRpdENhdGVnb3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/FetchData.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmV0Y2hEYXRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Invoice/CreateInvoice.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW52b2ljZVxDcmVhdGVJbnZvaWNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Publisher/CreatePublisher.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHVibGlzaGVyXENyZWF0ZVB1Ymxpc2hlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Publisher/EditPublisher.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHVibGlzaGVyXEVkaXRQdWJsaXNoZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Report/PublisherReport.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVwb3J0XFB1Ymxpc2hlclJlcG9ydC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Report/Report.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVwb3J0XFJlcG9ydC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Shelf/CreateShelf.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hlbGZcQ3JlYXRlU2hlbGYucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Shelf/EditShelf.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hlbGZcRWRpdFNoZWxmLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Subcategory/CreateSubcategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3ViY2F0ZWdvcnlcQ3JlYXRlU3ViY2F0ZWdvcnkucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Subcategory/EditSubcategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3ViY2F0ZWdvcnlcRWRpdFN1YmNhdGVnb3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/SubscriptionPlan/CreateSubscriptionPlan.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3Vic2NyaXB0aW9uUGxhblxDcmVhdGVTdWJzY3JpcHRpb25QbGFuLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/SubscriptionPlan/EditSubscriptionPlan.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3Vic2NyaXB0aW9uUGxhblxFZGl0U3Vic2NyaXB0aW9uUGxhbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/SubscriptionPlan/ListSubscriptionPlan.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3Vic2NyaXB0aW9uUGxhblxMaXN0U3Vic2NyaXB0aW9uUGxhbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Author/ListAuthor.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aG9yXExpc3RBdXRob3IucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-18auq4medn
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BookCopy/ListBookCopy.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va0NvcHlcTGlzdEJvb2tDb3B5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-c1ixb20f0n
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BookFloor/BookFloorList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va0Zsb29yXEJvb2tGbG9vckxpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-gaw5l6vg5j
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Book/ListBook.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va1xMaXN0Qm9vay5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-zefrjfejqv
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/BorrowedBook/ListBorrowedBook.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9ycm93ZWRCb29rXExpc3RCb3Jyb3dlZEJvb2sucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-j68l30b1dv
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Category/ListCategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlcTGlzdENhdGVnb3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-pz9taa6l8s
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Invoice/ListOfInvoice.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW52b2ljZVxMaXN0T2ZJbnZvaWNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-scwgrzqrrs
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Publisher/PublisherList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHVibGlzaGVyXFB1Ymxpc2hlckxpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-yipieasdl4
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Shelf/ShelfList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hlbGZcU2hlbGZMaXN0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-8kx8ldt0f8
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Subcategory/ListSubcategory.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3ViY2F0ZWdvcnlcTGlzdFN1YmNhdGVnb3J5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-siq2g1lbg9
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/SubscriptionUser/ListOfSubscriptionUser.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3Vic2NyaXB0aW9uVXNlclxMaXN0T2ZTdWJzY3JpcHRpb25Vc2VyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-9wrkmmdefo
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-athwwshfjf
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-4ldsrwwdzv
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/IDB_R53_YOUSOF/Final_Project_plan/Library_Blazor_Group_A_finalPro/Library_BlazorUI_Group_A_R53/Library_BlazorUI_Group_A_R53/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

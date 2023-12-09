@@ -1,0 +1,164 @@
+﻿@page "/category"
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+<h3>Category</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by CategoryName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateCategory" class="btn btn-primary"><i class="fas fa-plus"></i> Add Category</button>
+</div>
+
+<p>Serch Name: @filterText</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th @onclick="SortByCategoryId">Sirial No</th>
+            <th @onclick="SortByCategoryName">CategoryName</th>
+            <th @onclick="SortByDDCCode">DDCCode</th>
+            <th @onclick="SortByIsActive">Active</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item,index) in GetFilteredAndSortedCategorys().Select((value, index)=>(value,index)))
+        {
+            <tr>
+                <td>@(index+1)</td>
+                <td>@item.CategoryName</td>
+                <td>@item.DDCCode</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditCategory(item.CategoryId)" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                    <button @onclick="() => DeleteCategory(item.CategoryId)" class="btn btn-danger"><i class=" fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*<button @onclick="CreateCategory">Add Category</button>
+*@
+
+
+@code {
+
+    private Category? editedCategory;
+
+    [Inject]
+    public ICategoryService CategoryService { get; set; }
+    public IEnumerable<Category> CategorysList { get; set; } = new List<Category>();
+    protected override async Task OnInitializedAsync()
+    {
+        CategorysList = (await CategoryService.GetCategories()).ToList();
+    }
+
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    public void CreateCategory()
+    {
+        NavigationManager.NavigateTo("/create-category");
+    }
+
+
+    public async void EditCategory(int id)
+    {
+        // Navigate to the edit page
+        NavigationManager.NavigateTo($"/edit-category/{id}");
+
+        try
+        {
+            // Get the Category by its ID
+            editedCategory = await CategoryService.GetCategoryById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Category: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteCategory(int id)
+    {
+        var deletedItem = CategorysList.FirstOrDefault(item => item.CategoryId == id);
+        if (deletedItem != null)
+        {
+            await CategoryService.DeleteCategory(id);
+            await OnInitializedAsync();      //This method for Get Value to lis
+
+            //CategorysList = (await CategoryService.GetCategorys()).ToList();  //this line work for Get Value to List
+        }
+    }
+
+    public string filterText = "";
+    private string sortBy = "CategoryId"; // Default sorting by CategoryId
+    private bool sortAscending = true;
+    public IEnumerable<Category> GetFilteredAndSortedCategorys()
+    {
+        var filteredFloors = CategorysList;
+
+        // Filter based on CategoryName
+        if (!string.IsNullOrWhiteSpace(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredFloors = filteredFloors
+                .Where(floor => floor.CategoryName.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "CategoryName":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.CategoryName)
+                    : filteredFloors.OrderByDescending(floor => floor.CategoryName);
+                break;
+            case "DDCCode":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.DDCCode)
+                    : filteredFloors.OrderByDescending(floor => floor.DDCCode);
+                break;
+
+            case "IsActive":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.IsActive)
+                    : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.CategoryId)
+                    : filteredFloors.OrderByDescending(floor => floor.CategoryId);
+                break;
+        }
+
+        return filteredFloors;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        StateHasChanged(); // Trigger re-render to apply filtering instantly
+    }
+
+    public void SortByCategoryId() => SetSortCriteria("CategoryId");
+    public void SortByCategoryName() => SetSortCriteria("CategoryName");
+    public void SortByDDCCode() => SetSortCriteria("DDCCode");
+    public void SortByIsActive() => SetSortCriteria("IsActive");
+
+    public void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+}
+

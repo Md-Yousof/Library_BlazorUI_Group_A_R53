@@ -1,0 +1,124 @@
+﻿@page "/edit-bookCopy/{id}"
+
+
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+@using Library_BlazorUI_Group_A_R53.Services.ShelfService;
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-9">
+            <h2>Edit BookCopy</h2>
+        </div>
+
+        <div class="col-lg-3 text-right">
+            <a href="/bookfloor" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+
+    <form @onsubmit="UpdatebookCopy" style="background-color:ivory">
+        <div class="col-5">
+            <div class="form-group">
+                <label for="bookId">Book Title:</label>
+                <select class="form-control" @bind="editedBookCopy.BookId">
+                    <option value="">--Select Book Title</option>
+                    @foreach (var bookName in Books)
+                    {
+                        <option value="@bookName.BookId">@bookName.Title</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Book Condition:</label>
+                <select class="form-control" @bind="editedBookCopy.condition">
+                    <option value="">--Select Book Condition--</option>
+                    @foreach (var value in Enum.GetValues(typeof(BookCondition)))
+                    {
+                        <option value="@value">@value</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-check">
+                <label for="IsAvailable">IsAvailable:</label>
+                <input type="checkbox" class="form-check-input" id="IsAvailable" @bind="editedBookCopy.IsAvailable">
+            </div>
+
+            <div class="form-group">
+                <label for="callNumber">CallNumber:</label>
+                <input type="text" class="form-control" id="callNumber" @bind="editedBookCopy.CallNumber">
+            </div>
+
+            <div class="form-group">
+                <label for="shelfId">Shel Name:</label>
+                <select class="form-control" @bind="editedBookCopy.ShelfId">
+                    <option value="">--Select Shelf Name--</option>
+                    @foreach (var shelfName in Shelves)
+                    {
+                        <option value="@shelfName.ShelfId">@shelfName.ShelfName</option>
+                    }
+
+                </select>
+                <div class="form-group">
+                    <label for="ddc">DDC:</label>
+                    <input type="text" class="form-control" id="ddc" @bind="editedBookCopy.DDC">
+                </div>
+            </div>
+
+            <div class="form-check">
+                <label for="isActive">Active:</label>
+                <input type="checkbox" class="form-check-input" id="isActive" @bind="editedBookCopy.IsActive">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
+
+@code {
+
+
+    private BookCopy editedBookCopy = new BookCopy();
+    private List<Shelf> Shelves = new List<Shelf>();
+    private List<Book> Books = new List<Book>();
+
+    [Inject]
+    private IBookCopyService BookCopyService { get; set; }
+    [Inject]
+    private IShelfService ShelfService { get; set; }
+    [Inject]
+    private IBookService BookService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    [Parameter]
+    public string id { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int BookCopyId))
+        {
+            editedBookCopy = await BookCopyService.GetBookCopyById(BookCopyId);
+            Shelves = (await ShelfService.GetShelves()).ToList(); //for get Categories Dropdown List
+            Books = (await BookService.GetBooks()).ToList();
+        }
+    }
+
+    private async Task UpdatebookCopy()
+    {
+        try
+        {
+            await BookCopyService.UpdateBookCopy(editedBookCopy);
+            NavigationManager.NavigateTo("/bookCopy");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating BookCopy: {ex.Message}");
+        }
+
+    }
+}
+

@@ -1,0 +1,247 @@
+﻿@page "/bookCopy"
+
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Services.ShelfService
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>BookCopy</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by CallNumber" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateBookCopy" class="btn btn-primary"><i class="fas fa-plus"></i> Add</button>
+</div>
+<p>Search Name: @filterText</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>SN</th>
+            <th @onclick="SortByBookCopyName">Book Title</th>
+            <th @onclick="SortByBookCopyName">condition</th>
+            <th @onclick="SortByBookCopyName">Available</th>
+            <th @onclick="SortByBookCopyName">CallNumber</th>
+            <th @onclick="SortByBookCopyName">ShelfName</th>
+            <th @onclick="SortByBookCopyName">Active</th>                    
+            <th @onclick="SortByBookCopyName">DDC</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item, index) in GetPagedBookCopies().Select((value, index) => (value, index)))
+        {
+            <tr>
+                <td>@(((currentPage - 1) * pageSize) + index + 1)</td>
+                <td>@item.Title</td>
+                @*<td>@item.BookId</td>*@
+                <td>@item.condition</td>
+                <td>@item.IsAvailable</td>
+                <td>@item.CallNumber</td>
+                <td>@item.ShelfName</td>
+                @*<td>@item.ShelfId</td>*@
+                <td>@item.IsActive</td>
+                <td>@item.DDC</td>
+                <td>
+                    <button @onclick="() => EditBookCopy(item.BookCopyId)" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                    <button @onclick="() => DeleteBookCopy(item.BookCopyId)" class="btn btn-danger"><i class=" fas fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-between">
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" @onclick="() => GoToPage(1)">
+                <span class="page-link">First-Page</span>
+            </li>
+            <li class="page-item" @onclick="() => PreviousPage()">
+                <span class="page-link">Previous</span>
+            </li>
+            <li class="page-item">
+                <span class="page-link">@currentPage</span>
+            </li>
+            <li class="page-item" @onclick="() => NextPage()">
+                <span class="page-link">Next</span>
+            </li>
+            <li class="page-item" @onclick="() => GoToPage(totalPages)">
+                <span class="page-link">Last-Page</span>
+            </li>
+        </ul>
+    </nav>
+    <span>Page @currentPage of @totalPages</span>
+</div>
+
+@code {
+
+    private BookCopy? editedBookCopy;
+    private IEnumerable<BookCopy> BookCopiesList = new List<BookCopy>();
+
+    [Inject]
+    private IBookCopyService BookCopyService { get; set; }
+    [Inject]
+    public IShelfService ShelfService { get; set; }
+    [Inject]
+    private IBookService BookService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    private int totalPages => (int)Math.Ceiling((double)filteredAndSortedBookCopies.Count() / pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        BookCopiesList = (await BookCopyService.GetBookCopies()).ToList();
+        await GetShelfName(); //this Loading ShelfName in List of BookCopy
+        await GetBookTitle(); //this Loading Book Title in List of BookCopy
+    }
+
+    public async Task GetBookTitle()
+    {
+        foreach (var bookCopy in BookCopiesList)
+        {
+            try
+            {
+                var bookTitle = await BookService.GetBookById(bookCopy.BookId);
+                if (bookTitle != null)
+                {
+                    bookCopy.Title = bookTitle.Title; // Book class e Title namer 1Ta Properti niti hobe
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading BookFloor for ShelfId {bookCopy.BookId}: {ex.Message}");
+            }
+
+        }
+    }
+
+    public async Task GetShelfName() //this for show ShelfName in list of BookCopy
+    {
+        foreach (var bookCopy in BookCopiesList)
+        {
+             var shelfName = await ShelfService.GetShelfById(bookCopy.ShelfId);
+             if(shelfName != null)
+             {
+                bookCopy.ShelfName = shelfName.ShelfName;
+             }    
+        }
+    }
+
+
+    public void CreateBookCopy()
+    {
+        NavigationManager.NavigateTo("/create-bookCopy");
+    }
+
+
+    public async void EditBookCopy(int id)
+    {
+        NavigationManager.NavigateTo($"/edit-bookCopy/{id}");
+
+        try
+        {
+            editedBookCopy = await BookCopyService.GetBookCopyById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading BookCopy: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteBookCopy(int id)
+    {
+        var deletedItem = BookCopiesList.FirstOrDefault(item => item.BookCopyId == id);
+        if (deletedItem != null)
+        {
+            await BookCopyService.DeleteBookCopy(id);
+            await OnInitializedAsync();
+        }
+    }
+
+
+    private const int pageSize = 5; // Number of items per page
+    private int currentPage = 1;
+    private string filterText = "";
+    private string sortBy = "BookCopyId"; // Default sorting by BookCopyId
+    private bool sortAscending = true;
+
+    private IEnumerable<BookCopy> GetPagedBookCopies()
+    {
+        var filteredBookCopies = filteredAndSortedBookCopies.ToList();
+
+        int startIndex = (currentPage - 1) * pageSize;
+        return filteredBookCopies.Skip(startIndex).Take(pageSize);
+    }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+            currentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
+
+    private void GoToPage(int page)
+    {
+        if (page >= 1 && page <= totalPages)
+            currentPage = page;
+    }
+
+    private IEnumerable<BookCopy> filteredAndSortedBookCopies
+    {
+        get
+        {
+            var filteredBookCopies = BookCopiesList;
+
+            if (!string.IsNullOrWhiteSpace(filterText))
+            {
+                var searchText = filterText.Trim().ToLower();
+                filteredBookCopies = filteredBookCopies.Where(floor => floor.CallNumber.ToLower().Contains(searchText));
+            }
+
+            switch (sortBy)
+            {
+                case "CallNumber":
+                    filteredBookCopies = sortAscending
+                        ? filteredBookCopies.OrderBy(floor => floor.CallNumber)
+                        : filteredBookCopies.OrderByDescending(floor => floor.CallNumber);
+                    break;
+                case "IsActive":
+                    filteredBookCopies = sortAscending
+                        ? filteredBookCopies.OrderBy(floor => floor.IsActive)
+                        : filteredBookCopies.OrderByDescending(floor => floor.IsActive);
+                    break;
+                default:
+                    filteredBookCopies = sortAscending
+                        ? filteredBookCopies.OrderBy(floor => floor.BookCopyId)
+                        : filteredBookCopies.OrderByDescending(floor => floor.BookCopyId);
+                    break;
+            }
+
+            return filteredBookCopies.ToList();
+        }
+    }
+
+    private void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value?.ToString();
+        currentPage = 1;
+    }
+
+    private void SortByBookCopyName()
+    {
+        if (sortBy == "BookCopyName")
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = "BookCopyName";
+        currentPage = 1;
+    }
+}

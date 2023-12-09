@@ -1,0 +1,50 @@
+﻿@page "/create-category"
+
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+
+<form @onsubmit="CreateCategoryAsync">
+
+    <div class="row">
+        <div class="col-lg-9">
+            <h2>Create Category</h2>
+        </div>
+        <div class="col-lg-3 text-right">
+            <a href="/bookfloor" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="bookFloorName">Category Name:</label>
+        <input type="text" class="form-control" id="bookFloorName" @bind="newCategory.CategoryName">
+    </div>
+
+    <div class="form-group">
+        <label for="bookFloorName">DDCCode:</label>
+        <input type="text" class="form-control" id="bookFloorName" @bind="newCategory.DDCCode">
+    </div>
+
+    <div class="form-check">
+        <label for="isActive">Active:</label>
+        <input type="checkbox" class="form-check-input" id="isActive" @bind="newCategory.IsActive">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@code {
+    private Category newCategory = new Category();
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateCategoryAsync()
+    {
+        await CategoryService.CreateCategory(newCategory);
+        NavigationManager.NavigateTo("/category"); // Redirect to the bookFloors listing page
+    }
+}
+

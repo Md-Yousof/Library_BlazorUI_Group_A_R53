@@ -1,0 +1,96 @@
+﻿@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #printableTable, #printableTable * {
+        visibility: visible;
+    }
+
+    #printableTable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        page-break-before: always;
+    }
+
+    #printButton {
+        display: none;
+    }
+
+
+
+
+    .page-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+    }
+
+
+
+    #printableTable {
+        margin-top: 20px; /* Adjust the value as needed */
+    }
+
+        /*#printableTable .page-header {
+            background-color: #007bff; 
+            color: #fff;*/ /* Text color in the header */
+        /*padding: -30px; 
+        }*/
+        #printableTable .table {
+            margin-top: 130px; /* Add a top margin to create space between page-header and TABLE */
+            page-break-after: always;
+        }
+
+
+    #printableTable {
+        display: flex;
+        align-items: center; /* Vertically center content in the div */
+    }
+
+    /*.col-md-2 {
+        flex: 1;*/ /* Take up 50% of the available width for the image */
+    /*}
+
+    .col-md-10 {
+        flex: 3;*/ /* Take up 50% of the available width for the content */
+    /*text-align: center;
+    }*/
+
+    /*=====*/
+
+
+    .col-md-2 {
+        flex: 1; /* Take up 20% of the available width for the image */
+    }
+
+    .col-md-10 {
+        flex: 5; /* Take up 80% of the available width for the content */
+        text-align: center;
+    }
+
+    .full-page {
+        width: 100%;
+        page-break-before: always; /* Ensures a page break before the table for printing */
+    }
+
+    .table {
+        width: 100%;
+    }
+
+        .table th {
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+        }
+
+    .unwanted-content {
+        display: none;
+    }
+}

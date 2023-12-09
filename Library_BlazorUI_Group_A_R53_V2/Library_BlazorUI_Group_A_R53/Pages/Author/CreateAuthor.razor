@@ -1,0 +1,66 @@
+﻿@page "/create-author"
+
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+            <h2>Author Create</h2>
+        </div>
+
+        <div class="col-lg-3 text-right">
+            <a href="/author" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+
+    <form @onsubmit="CreateAuthorAsync">
+        <div class="form-group">
+            <label for="FirstName">FirstName:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="newAuthor.FirstName">
+        </div>
+        <div class="form-group">
+            <label for="LastName">LastName:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="newAuthor.LastName">
+        </div>
+         <div class="form-group">
+            <label for="BirthDate">DateOfBirth:</label>
+            <input type="date" class="form-control" id="bookFloorName" @bind="newAuthor.BirthDate">
+        </div>
+
+        <div class="form-group">
+            <label for="Biography">Biography:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="newAuthor.Biography">
+        </div>
+        <div class="form-group">
+            <label for="Email">Email:</label>
+            <input type="email" class="form-control" id="bookFloorName" @bind="newAuthor.Email">
+        </div>
+        <div class="form-group">
+            <label for="CellPhone">CellPhone:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="newAuthor.Phone">
+        </div>
+        <div class="form-check">
+            <label for="isActive">Active:</label>
+            <input type="checkbox" class="form-check-input" id="isActive" @bind="newAuthor.IsActive">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+
+@code {
+    private Author newAuthor = new Author();
+
+    [Inject]
+    private IAuthorService AuthorService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateAuthorAsync()
+    {
+        await AuthorService.CreateAuthor(newAuthor);
+        NavigationManager.NavigateTo("/author"); // Redirect to the bookFloors listing page
+    }
+}
+

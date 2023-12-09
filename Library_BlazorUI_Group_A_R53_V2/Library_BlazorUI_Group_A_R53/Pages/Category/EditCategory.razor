@@ -1,0 +1,60 @@
+﻿@page "/edit-category/{id}"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>Edit Category</h3>
+
+<!-- Category editing form -->
+<form @onsubmit="UpdateCategory">
+    <div class="form-group">
+        <label for="bookFloorName">Category Name:</label>
+        <input type="text" class="form-control" id="bookFloorName" @bind="editedCategory.CategoryName">
+    </div>
+
+    <div class="form-group">
+        <label for="bookFloorName">DDCCode:</label>
+        <input type="text" class="form-control" id="bookFloorName" @bind="editedCategory.DDCCode">
+    </div>
+
+    <div class="form-check">
+        <label for="isActive">Active:</label>
+        <input type="checkbox" class="form-check-input" id="isActive" @bind="editedCategory.IsActive">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+@code {
+    private Category editedCategory = new Category();
+
+    [Parameter]
+    public string id { get; set; }
+
+    [Inject]
+    private ICategoryService CategoryService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(id, out int bookFloorId))
+        {
+            editedCategory = await CategoryService.GetCategoryById(bookFloorId);
+        }
+    }
+
+    private async Task UpdateCategory()
+    {
+        try
+        {
+            await CategoryService.UpdateCategory(editedCategory);
+            NavigationManager.NavigateTo("/category");
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or show error messages to the user
+            Console.WriteLine($"Error updating Category: {ex.Message}");
+        }
+    }
+}

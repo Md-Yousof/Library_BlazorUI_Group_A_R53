@@ -1,0 +1,22 @@
+.table[b-scwgrzqrrs] {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+    .table th[b-scwgrzqrrs] {
+        background-color: rgb(37, 150, 190);
+        color: #fff;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .table td[b-scwgrzqrrs] {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .table tbody[b-scwgrzqrrs] {
+        background-color: rgb(242, 245, 245, 0.86);
+        padding: 10px;
+    }

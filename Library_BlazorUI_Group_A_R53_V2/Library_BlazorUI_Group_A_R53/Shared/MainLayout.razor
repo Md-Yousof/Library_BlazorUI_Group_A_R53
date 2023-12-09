@@ -1,0 +1,87 @@
+﻿@inherits LayoutComponentBase
+@using Library_BlazorUI_Group_A_R53.Accounts
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider authStateProvider
+
+<PageTitle>Library_BlazorUI_Group_A_R53</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <p>Welcome, @UserName!</p>
+                    <a href="#" @onclick="Logout">Logout</a>
+                </Authorized>
+
+                <NotAuthorized>
+                    <a href="/login">Login</a>
+                    @*<a href="/register">Register</a>*@
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+@*
+        <div class="top-row px-4">
+            @if (!string.IsNullOrEmpty(UserName))
+            {
+                <p>Welcome, @UserName!</p>
+                <a href="#" @onclick="Logout">Logout</a>
+            }
+            else
+            {
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            }
+        </div>*@
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private string UserName = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Retrieve user display name from local storage
+            UserName = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "userName");
+            await Task.Delay(1000); // Introduce a delay
+            StateHasChanged(); // Notify Blazor to re-render the component
+        }
+    }
+
+
+    //private async Task Logout()
+    //{
+    //    //var customAuthStateProvider = (CustomAuthentication)authStateProvider;
+    //    //await customAuthStateProvider.UpdateAuthenticationState(null);
+    //    // Clear user authentication data from local storage
+    //    await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "userName");
+    //    await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "userJWT");
+
+    //    // Update UserDisplayName to an empty string
+    //    UserName = "";
+
+    //    // Notify Blazor to re-render the component
+    //    StateHasChanged();
+
+    //    // Redirect to the login page or perform other actions after logout
+    //    Navigation.NavigateTo("/login");
+    //}
+
+
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthentication)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        Navigation.NavigateTo("/login", true);
+    }
+}

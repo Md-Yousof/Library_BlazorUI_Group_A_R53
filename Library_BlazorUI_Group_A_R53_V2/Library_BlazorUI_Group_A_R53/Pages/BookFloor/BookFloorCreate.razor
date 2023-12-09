@@ -1,0 +1,49 @@
+﻿@page "/create-bookFloor"
+
+@using Library_BlazorUI_Group_A_R53.Services;
+@using Library_BlazorUI_Group_A_R53.Data.Models;
+
+<div class="container">
+    <div class="row">
+        
+        <div class="col-lg-9">
+            <h2>BookFloor Create</h2>
+        </div>
+
+        <div class="col-lg-3 text-right">
+            <a href="/bookfloor" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+   
+    <form @onsubmit="CreateBookFloorAsync" style="background-color:ivory">
+      <div class="col-5">
+        <div class="form-group">
+            <label for="bookFloorName">BookFloor Name:</label>
+            <input type="text" class="form-control" id="bookFloorName" @bind="newBookFloor.BookFloorName">
+        </div>
+
+        <div class="form-check">
+            <label for="isActive">Active:</label>
+            <input type="checkbox" class="form-check-input" id="isActive" @bind="newBookFloor.IsActive">
+        </div>
+  
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
+    </form>
+</div>
+
+@code {
+    private BookFloor newBookFloor = new BookFloor();
+
+    [Inject]
+    private IBookFloorService BookFloorService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private async Task CreateBookFloorAsync()
+    {
+        await BookFloorService.CreateBookFloor(newBookFloor);
+        NavigationManager.NavigateTo("/bookfloor"); // Redirect to the bookFloors listing page
+    }
+}
+

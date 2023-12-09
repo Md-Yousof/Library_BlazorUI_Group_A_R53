@@ -1,0 +1,49 @@
+﻿@page "/reportviewer"
+@using Library_BlazorUI_Group_A_R53.Pages.Publisher
+@using Library_BlazorUI_Group_A_R53.Pages.Category
+@using Library_BlazorUI_Group_A_R53.Pages.Book
+@using Library_BlazorUI_Group_A_R53.Pages.Author
+@using Library_BlazorUI_Group_A_R53.Pages.BookCopy
+
+<h3>Report Viewer</h3>
+
+<!-- Create a dropdown or navigation menu to select a report -->
+<select @bind="selectedReport">
+    <option value="">-- Select Report --</option>
+
+    <option value="publisher">Publisher Report</option>
+    <option value="category">Category Report</option>
+    <option value="book">Book Report</option>
+    <option value="author">Author Report</option>
+    <option value="bookCopy">BookCopy Report</option>
+    <!-- Add more report options as needed -->
+</select>
+
+<!-- Display the selected report based on user choice -->
+<div>
+    @switch (selectedReport)
+    {
+        case "publisher":
+            <PublisherReport />
+            break;
+        case "category":
+            <CategoryReport />
+            break;
+        case "book":
+            <BokReport />
+            break;
+        case "author":
+            <AuthorReport />
+            break;
+        case "bookCopy":
+            <BookCopy />
+            break;
+        default:
+            <p>Select a report from the dropdown.</p>
+            break;
+    }
+</div>
+
+@code {
+    private string selectedReport = ""; // Default to the product report
+}

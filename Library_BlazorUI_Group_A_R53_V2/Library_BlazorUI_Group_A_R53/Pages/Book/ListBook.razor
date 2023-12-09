@@ -1,0 +1,308 @@
+﻿@page "/book"
+
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>Book</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by Book Name" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="Createbook" class="btn btn-primary"><i class="fas fa-plus"></i> Add Book</button>
+</div>
+<p>Serch Name: @filterText</p>
+
+<!-- Table with Sorting -->
+<table class="table">
+
+    <tr>
+        <th @onclick="SortByBookId">SN</th>
+        <th @onclick="SortByTitle">Title</th>
+        <th @onclick="SortByAuthors">Authors</th>
+        <th @onclick="SortByISBN">ISBN</th>
+        <th @onclick="SortByCategoryId">Publisher</th>
+        <th @onclick="SortByIsActive">PublishedYear</th>
+        <th @onclick="SortByIsActive">Edition</th>
+        <th @onclick="SortByIsActive">Copies</th>
+        <th @onclick="SortByIsActive">Language</th>
+        @* <th @onclick="SortByIsActive">Description</th>*@
+        <th @onclick="SortByIsActive">BookPrice</th>
+        @*<th @onclick="SortByIsActive">DDCCode</th>*@
+        <th @onclick="SortByIsActive">Active</th>
+        @*<th @onclick="SortByIsActive">IsDigital</th>*@
+        @*<th @onclick="SortByIsActive">PublisherAgreement</th>*@
+        <th @onclick="SortByIsActive">Category</th>
+        <th @onclick="SortByIsActive">Cover</th>
+        @*<th @onclick="SortByIsActive">Agreement</th>*@
+        @*<th @onclick="SortByIsActive">EBook</th>*@
+
+        <th>Action</th>
+    </tr>
+
+    <tbody>
+        @foreach (var (item, index) in GetFilteredAndSortedBooks().Select((value, index) => (value, index)))
+        {
+            <tr>
+                <td>@(index + 1)</td>
+                <td>@item.Title</td>
+                <td>
+                    @* @foreach (var authorId in item.AuthorIds)
+                {
+                var author = Authors.FirstOrDefault(a => a.AuthorId == authorId);
+                if (author != null)
+                {
+                <span>@author.FirstName @author.LastName</span>
+                <br />
+                }
+                }*@
+                </td>
+                <td>@item.ISBN</td>
+                @*<td>@item.PublisherId</td>*@
+                <td>@item.PublisherName</td>
+                <td>@item.PublishedYear</td>
+                <td>@item.Edition</td>
+                <td>@item.TotalCopies</td>
+                <td>@item.Language</td>
+                @*<td>@item.Description</td>*@
+                <td>@item.BookPrice</td>
+                @* <td>@item.DDCCode</td>*@
+                <td>@item.IsActive</td>
+                @*<td>@item.IsDigital</td>*@
+                @*<td>@item.PublisherAgreement</td>*@
+                @* <td>@item.CategoryId</td>*@
+                <td>@item.CategoryName</td>
+                <td>
+                    <!-- Display the product image as an actual image -->
+                    <img src="@item.CoverFileName" alt="@item.Title" style="max-width: 65px;" />
+                </td>
+                
+               @* <td>@item.EBookFileName</td>
+                <td>@item.AgreementFileName</td>*@
+
+                <td>
+                    <button @onclick="() => EditBook(item.BookId)" class="btn btn-secondary"><i class="fas fa-edit"></i></button>
+                    <button @onclick="() => DeleteBook(item.BookId)" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                    <button @onclick="() => DetailsBook(item.BookId)" class="btn btn-info"><i class="fas fa-info-circle"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private Book? editedBook;
+    private List<Category> Categories = new List<Category>();
+    private List<Publisher> Publishers = new List<Publisher>();
+    private List<Author> Authors = new List<Author>();
+
+    public IEnumerable<Book> BookList { get; set; } = new List<Book>();
+
+    //private List<Author> Author = new List<Author>();
+    //private List<BookAuthor> BookAuthors = new List<BookAuthor>();
+    //protected IJSRuntime JSRuntime { get; set; }
+
+
+    [Inject]
+    public ICategoryService CategoryService { get; set; }
+    [Inject]
+    public IPublisherService PublisherService { get; set; }
+    [Inject]
+    public IBookService BookService { get; set; }
+    [Inject]
+    public IAuthorService AuthorService { get; set; }
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        BookList = (await BookService.GetBooks()).ToList();
+        await GetCategoryName();
+        await GetPublisherName();
+        // await GetAuthorName();
+
+
+    }
+    public async Task GetCategoryName() //This is for Get CategoryName in List instad of CategoryId
+    {
+        foreach (var book in BookList)
+        {
+            try
+            {
+                var categoryName = await CategoryService.GetCategoryById(book.CategoryId);
+                if (categoryName != null)
+                {
+                    book.CategoryName = categoryName.CategoryName;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error Loading CategoryName for BookId {book.BookId}: {ex.Message}");
+            }
+        }
+    }
+    public async Task GetPublisherName() //This is for Get publisherName in List instad of PublisherId
+    {
+
+        foreach (var book in BookList)
+        {
+            var publisherName = await PublisherService.GetPublisherById(book.PublisherId);
+            if (publisherName != null)
+            {
+                book.PublisherName = publisherName.PublisherName;
+            }
+
+        }
+
+    }
+
+    //public async Task GetAuthorName() //This is for Get publisherName in List instad of PublisherId
+    //{
+
+    //    @foreach (var book in BookList)
+    //        {
+    //          var author = await AuthorService.GetAuthorById(book.BookAuthor);
+    //            //var author = Authors.FirstOrDefault(a => a.AuthorId == authorId);
+    //            if (author != null)
+    //            {
+    //                //<span>@author.FirstName @author.LastName</span>
+    //                //<br />
+    //                book.FirstName = author.FirstName;
+    //                book.LastName = author.LastName;
+    //            }
+    //        }
+
+    //}
+
+
+
+
+
+    public void Createbook()
+    {
+        NavigationManager.NavigateTo("/create-book");
+    }
+
+
+    public async void EditBook(int id)
+    {
+        NavigationManager.NavigateTo($"/edit-book/{id}");
+
+        try
+        {
+            // Get the Subcategory by its ID
+            editedBook = await BookService.GetBookById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Subcategory: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteBook(int id)
+    {
+        var deletedItem = BookList.FirstOrDefault(item => item.BookId == id);
+
+        //var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this order?");
+
+        if (deletedItem != null)
+        {
+            await BookService.DeleteBook(id);
+            await OnInitializedAsync();      //This method for Get Value to lis
+
+        }
+    }
+
+    public async Task DetailsBook(int id)
+    {
+        var detail = BookList.FirstOrDefault(item => item.BookId == id);
+        if (detail != null)
+        {
+            NavigationManager.NavigateTo($"/details-book/{id}");
+        }
+    }
+
+
+
+    public string filterText = "";
+    private string sortBy = "SubcategoryId"; // Default sorting by SubcategoryId
+    private bool sortAscending = true;
+    public IEnumerable<Book> GetFilteredAndSortedBooks()
+    {
+        var filteredFloors = BookList;
+
+        // Filter based on SubcategoryName
+        if (!string.IsNullOrWhiteSpace(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredFloors = filteredFloors
+                .Where(floor => floor.Title.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "Title":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.Title)
+                    : filteredFloors.OrderByDescending(floor => floor.Title);
+                break;
+
+
+            case "IsActive":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.IsActive)
+                    : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                break;
+
+            case "CategoryId":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.CategoryId)
+                    : filteredFloors.OrderByDescending(floor => floor.CategoryId);
+                break;
+
+            case "ISBN":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.ISBN)
+                    : filteredFloors.OrderByDescending(floor => floor.ISBN);
+                break;
+
+            // Add more cases for other columns if needed
+
+            default:
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.BookId)
+                    : filteredFloors.OrderByDescending(floor => floor.BookId);
+                break;
+        }
+
+        return filteredFloors;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        StateHasChanged(); // Trigger re-render to apply filtering instantly
+    }
+
+    public void SortByTitle() => SetSortCriteria("Title");
+    public void SortByISBN() => SetSortCriteria("ISBN");
+    public void SortByIsActive() => SetSortCriteria("IsActive");
+    public void SortByCategoryId() => SetSortCriteria("CategoryId");
+    public void SortByBookId() => SetSortCriteria("BookId");
+    public void SortByAuthors() => SetSortCriteria("Authors");
+
+    //public void SortByIsActive() => SetSortCriteria("IsActive");
+
+    public void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+}

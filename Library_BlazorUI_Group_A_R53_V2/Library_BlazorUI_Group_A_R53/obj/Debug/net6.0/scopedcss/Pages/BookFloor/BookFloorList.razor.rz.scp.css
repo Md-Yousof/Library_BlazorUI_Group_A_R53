@@ -1,0 +1,23 @@
+
+.table[b-gaw5l6vg5j] {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+    .table th[b-gaw5l6vg5j] {
+        background-color: rgb(37, 150, 190);
+        color: #fff;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .table td[b-gaw5l6vg5j] {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .table tbody[b-gaw5l6vg5j] {
+        background-color: rgb(242, 245, 245, 0.86);
+        padding: 10px;
+    }

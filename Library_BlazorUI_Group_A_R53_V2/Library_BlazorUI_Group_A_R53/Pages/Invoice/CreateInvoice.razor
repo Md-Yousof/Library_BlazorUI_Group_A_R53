@@ -1,0 +1,59 @@
+﻿@page "/createInvoice"
+@using Library_BlazorUI_Group_A_R53.Data.Models
+@inject IInvoiceService InvoiceService
+@inject NavigationManager NavigationManager
+
+<div class="form-control">
+<div class="row">
+    <div class="col-lg-9">
+        <h2>Create Invoice</h2>
+    </div>
+    <div class="col-lg-3 text-right">
+        <a href="/invoiceList" role="button" class="btn btn-secondary btn-sm">Back to List</a>
+    </div>
+</div>
+<div class="row">
+        <div class="col-4">
+
+
+            <div class="form-group">
+                <label for="pyment">Payment:</label>
+                <input type="number" class="form-control" id="payment" @bind="invoiceCreate.Payment" />
+            </div>
+
+            <div class="form-group">
+
+                <label for="userId">UserId:</label>
+                <select class="form-control" @bind="invoiceCreate.UserId">
+                    <option value=""> --Select UserId--</option>
+                    @foreach (var user in ListOfinvoice)
+                    {
+                        <option value="@user.UserId">@user.UserId</option>
+                    }
+                </select>
+            </div>
+
+           
+            <button class="btn btn-primary" @onclick="CreateInvoices">Create Invoice</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    public Invoice invoiceCreate = new Invoice();
+    public List<Invoice> ListOfinvoice = new List<Invoice>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch book floors from the service
+        //categories = (await CategoryService.GetCategories()).ToList();
+        ListOfinvoice = (await InvoiceService.GetAllInvoice()).ToList();
+        await base.OnInitializedAsync();
+    }
+    private async Task CreateInvoices()
+    {
+        await InvoiceService.CreateInvoices(invoiceCreate);
+        NavigationManager.NavigateTo("/invoiceList");
+    }
+}
+

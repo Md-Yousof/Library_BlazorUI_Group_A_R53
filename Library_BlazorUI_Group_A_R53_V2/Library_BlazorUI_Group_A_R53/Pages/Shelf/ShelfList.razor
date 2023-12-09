@@ -1,0 +1,203 @@
+﻿@page "/shelf"
+@using Library_BlazorUI_Group_A_R53.Services
+@using Library_BlazorUI_Group_A_R53.Services.ShelfService
+@using Library_BlazorUI_Group_A_R53.Data.Models
+
+<h3>Shelf</h3>
+
+<div class="d-flex align-items-center justify-content-between filter-container">
+    <div class="d-flex align-items-center">
+        <input type="text" @bind="filterText" placeholder="Filter by BookFloorName" @oninput="OnFilterTextChanged">
+    </div>
+    <button @onclick="CreateShelf" class="btn btn-primary"><i class="fas fa-plus"></i> Add Shelf</button>
+</div>
+<p>Serching Name: @filterText</p>
+
+<!-- Table with Sorting -->
+<table class="table">
+    <thead>
+        <tr>
+            <th @onclick="SortByShelfId">Sirial No</th>
+            <th @onclick="SortByShelfName">ShelfName</th>
+            <th @onclick="SortByBookFloorId">FloorName</th>
+            <th @onclick="SortByIsActive">Active</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (item, index) in GetFilteredAndSortedShelfs().Select((value,index)=>(value,index)))
+        {
+            <tr>
+                <td>@(index+1)</td>
+                <td>@item.ShelfName</td>
+               @* <td>@item.BookFloorId</td>    BookFloorId er Poriborte FloorName*@
+                <td>@item.BookFloorName</td>
+                <td>@item.IsActive</td>
+                <td>
+                    <button @onclick="() => EditShelf(item.ShelfId)" class="btn btn-secondary"><i class=" fas fa-edit"></i></button>
+                    <button @onclick="() => DeleteShelf(item.ShelfId)" class="btn btn-danger"><i class=" fas fa-trash"></i></button>
+                    <button @onclick="() => DetailsShelf(item.ShelfId)" class="btn btn-info"><i class="fas fa-info-circle"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+        
+
+@code {
+
+    private Shelf? editedShelf; //this for edit navigatioin
+    public IEnumerable<Shelf> ShelfsList { get; set; } = new List<Shelf>();
+
+    [Inject]
+    public IBookFloorService BookFloorService { get; set; }
+    [Inject]
+    public IShelfService ShelfService { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShelfsList = (await ShelfService.GetShelves()).ToList(); //this is for Shelf list
+
+        await GetBookFloorName();  //Get BookfloorName in list run Time application      
+    }
+
+    public async Task GetBookFloorName() //This Method for get BookFloorName in List instad of BookFloorId
+    {
+        foreach (var shelf in ShelfsList)  
+        {
+            try
+            {
+                // Fetch the BookFloor by its ID
+                var bookFloor = await BookFloorService.GetBookFloorById(shelf.BookFloorId);
+
+                if (bookFloor != null)
+                {
+                    shelf.BookFloorName = bookFloor.BookFloorName;
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading BookFloor for ShelfId {shelf.ShelfId}: {ex.Message}");
+            }
+        }
+          
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    public void CreateShelf()
+    {
+        NavigationManager.NavigateTo("/create-shelf");
+    }
+
+
+    public async void EditShelf(int id)
+    {
+        // Navigate to the edit page
+        NavigationManager.NavigateTo($"/edit-shelf/{id}");
+
+        try
+        {
+            // Get the Shelf by its ID
+            editedShelf = await ShelfService.GetShelfById(id);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Shelf: {ex.Message}");
+        }
+    }
+
+    public async Task DeleteShelf(int id)
+    {
+        var deletedItem = ShelfsList.FirstOrDefault(item => item.ShelfId == id);
+        
+        //var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this order?");
+
+        if (deletedItem != null)
+        {
+            await ShelfService.DeleteShelf(id);
+            await OnInitializedAsync();      //This method for Get Value to lis
+
+        }
+    }
+
+
+    public async Task DetailsShelf(int id)
+    {
+        var detail = ShelfsList.FirstOrDefault(item => item.ShelfId == id);
+        if (detail != null)
+        {
+            NavigationManager.NavigateTo($"/details-shelf/{id}");
+        }
+    }
+
+    public string filterText = "";
+    private string sortBy = "ShelfId"; // Default sorting by ShelfId
+    private bool sortAscending = true;
+    public IEnumerable<Shelf> GetFilteredAndSortedShelfs()
+    {
+        var filteredFloors = ShelfsList;
+
+        // Filter based on ShelfName
+        if (!string.IsNullOrWhiteSpace(filterText))
+        {
+            var searchText = filterText.Trim().ToLower();
+            filteredFloors = filteredFloors
+                .Where(floor => floor.ShelfName.ToLower().Contains(searchText));
+        }
+
+        // Sort based on the selected column
+        switch (sortBy)
+        {
+            case "ShelfName":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.ShelfName)
+                    : filteredFloors.OrderByDescending(floor => floor.ShelfName);
+                break;
+            case "IsActive":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.IsActive)
+                    : filteredFloors.OrderByDescending(floor => floor.IsActive);
+                break;
+
+            case "BookFloorId":
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.BookFloorId)
+                    : filteredFloors.OrderByDescending(floor => floor.BookFloorId);
+                break;
+            // Add more cases for other columns if needed
+
+            default:
+                filteredFloors = sortAscending
+                    ? filteredFloors.OrderBy(floor => floor.ShelfId)
+                    : filteredFloors.OrderByDescending(floor => floor.ShelfId);
+                break;
+        }
+
+        return filteredFloors;
+    }
+
+    public void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        filterText = e.Value.ToString();
+        StateHasChanged(); // Trigger re-render to apply filtering instantly
+    }
+
+    public void SortByShelfId() => SetSortCriteria("ShelfId");
+    public void SortByShelfName() => SetSortCriteria("ShelfName");
+    public void SortByBookFloorId() => SetSortCriteria("BookFloorId");
+    public void SortByIsActive() => SetSortCriteria("IsActive");
+
+    public void SetSortCriteria(string column)
+    {
+        if (sortBy == column)
+            sortAscending = !sortAscending;
+        else
+            sortAscending = true;
+
+        sortBy = column;
+    }
+}
