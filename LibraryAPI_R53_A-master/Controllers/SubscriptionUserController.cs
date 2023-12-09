@@ -25,7 +25,7 @@ namespace LibraryAPI_R53_A.Controllers
             _userManager = user;
         }
 
-        [Authorize]
+      //  [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -33,7 +33,7 @@ namespace LibraryAPI_R53_A.Controllers
             return Ok(s);
         }
 
-        [Authorize]
+       // [Authorize]
         [HttpPost]
         public async Task<IActionResult> SendSubscriptionRequest(int subscriptionPlanId, string transactionId)
         {
@@ -76,7 +76,7 @@ namespace LibraryAPI_R53_A.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPut("accept/{subscriptionUserId}")]
         public async Task<IActionResult> AcceptSubscriptionRequest(int subscriptionUserId)
         {
@@ -108,7 +108,7 @@ namespace LibraryAPI_R53_A.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPut("reject/{subscriptionUserId}")]
         public async Task<IActionResult> RejectSubscriptionRequest(int subscriptionUserId)
         {
