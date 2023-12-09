@@ -27,7 +27,7 @@ namespace LibraryAPI_R53_A.Controllers
             _inv = inv;
         }
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpGet("all-borrowlist")]
         public async Task<IActionResult> GetBorrowedList()
         {
@@ -37,7 +37,7 @@ namespace LibraryAPI_R53_A.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpGet("requested-books/{username}")]
         public async Task<IActionResult> GetRequestedBooksByUserName(string username)
         {
@@ -60,7 +60,7 @@ namespace LibraryAPI_R53_A.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin, User")]
+       // [Authorize(Roles = "Admin, User")]
         [HttpGet("all-request/{username}")]
         public async Task<IActionResult> GetAllRequestByUserName(string username)
         {
@@ -85,7 +85,7 @@ namespace LibraryAPI_R53_A.Controllers
 
 
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpGet("cancelled-books")]
         public async Task<IActionResult> GetCancelledBooks()
         {
@@ -101,7 +101,7 @@ namespace LibraryAPI_R53_A.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+      // [Authorize(Roles = "Admin")]
         [HttpGet("approved-books")]
         public async Task<IActionResult> GetApprovedBooks()
         {
@@ -117,7 +117,7 @@ namespace LibraryAPI_R53_A.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin, User")]
+      // [Authorize(Roles = "Admin, User")]
         [HttpPost("book-request")]
         public async Task<IActionResult> SendBookRequest(BorrowedBook borrowedBook)
         {
@@ -179,7 +179,7 @@ namespace LibraryAPI_R53_A.Controllers
         //    }
         //}
 
-        [Authorize]
+      //  [Authorize]
         [HttpGet]
         public async Task<IActionResult> BooksShow()
         {
@@ -190,7 +190,7 @@ namespace LibraryAPI_R53_A.Controllers
 
         }
 
-        [Authorize(Roles ="Admin")]
+       // [Authorize(Roles ="Admin")]
         [HttpPut("Approve/{borrowedBookId}")]
         public async Task<IActionResult> ApproveBorrowedBook(int borrowedBookId)
         {
@@ -209,7 +209,7 @@ namespace LibraryAPI_R53_A.Controllers
             return Ok(borrowedBook); 
         }
 
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         [HttpPut("Cancel/{borrowedBookId}")]
         public async Task<IActionResult> CancelBorrowedBook(int borrowedBookId, string comment)
         {
@@ -228,7 +228,7 @@ namespace LibraryAPI_R53_A.Controllers
             return Ok(borrowedBook);
         }
 
-        [Authorize(Roles = "Admin")]
+      //  [Authorize(Roles = "Admin")]
         [HttpPut("Return/{borrowedBookId}")]
         public async Task<IActionResult> ReturnBook(int borrowedBookId, string remarks, decimal miscFine )
         {
